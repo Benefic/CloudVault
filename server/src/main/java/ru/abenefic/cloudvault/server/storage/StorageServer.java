@@ -12,11 +12,23 @@ import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import ru.abenefic.cloudvault.server.model.User;
+import ru.abenefic.cloudvault.server.support.Database;
 
 public class StorageServer {
     private static final Logger LOG = LogManager.getLogger(StorageServer.class);
 
     public StorageServer(int port) {
+
+
+        //TODO test
+        try {
+            User user = Database.instance().openSession().load(User.class, 1);
+            System.out.println(user);
+        } catch (Exception e) {
+            LOG.error("test", e);
+        }
+
         EventLoopGroup auth = new NioEventLoopGroup(1);
         EventLoopGroup worker = new NioEventLoopGroup();
         try {
@@ -41,5 +53,6 @@ public class StorageServer {
             auth.shutdownGracefully();
             worker.shutdownGracefully();
         }
+
     }
 }
