@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="450.0" prefWidth="600.0"
+            xmlns="http://javafx.com/javafx/11.0.1"
+            fx:controller="ru.abenefic.cloudvault.client.controller.AuthDialogController">
+    <Pane fx:id="container" layoutX="14.0" layoutY="14.0" prefHeight="450.0" prefWidth="600.0"
+          AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+          AnchorPane.topAnchor="0.0">
+        <ImageView fx:id="imageView"/>
+        <Button fx:id="btnLogin" defaultButton="true" layoutX="225.0" layoutY="295.0" maxHeight="-Infinity"
+                maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false"
+                onAction="#login" prefHeight="40.0" prefWidth="150.0" text="ВХОД" textAlignment="JUSTIFY"
+                textOverrun="CLIP">
+            <font>
+                <Font size="18.0"/>
+            </font>
+        </Button>
+        <Button fx:id="btnRegister" layoutX="225.0" layoutY="355.0" maxHeight="-Infinity" maxWidth="-Infinity"
+                minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#register"
+                prefHeight="40.0" prefWidth="150.0" text="РЕГИСТРАЦИЯ" textAlignment="JUSTIFY">
+            <font>
+                <Font size="18.0"/>
+            </font>
+        </Button>
+        <Hyperlink fx:id="hlSettings" alignment="CENTER" contentDisplay="CENTER" layoutX="266.0" layoutY="399.0"
+                   onAction="#openSettings" text="Настройки"/>
+    </Pane>
+</AnchorPane>
