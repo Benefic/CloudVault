@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
@@ -11,23 +11,42 @@
     <Pane fx:id="container" layoutX="14.0" layoutY="14.0" prefHeight="450.0" prefWidth="600.0"
           AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
           AnchorPane.topAnchor="0.0">
-        <ImageView fx:id="imageView"/>
-        <Button fx:id="btnLogin" defaultButton="true" layoutX="225.0" layoutY="295.0" maxHeight="-Infinity"
-                maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false"
-                onAction="#login" prefHeight="40.0" prefWidth="150.0" text="ВХОД" textAlignment="JUSTIFY"
-                textOverrun="CLIP">
-            <font>
-                <Font size="18.0"/>
-            </font>
-        </Button>
-        <Button fx:id="btnRegister" layoutX="225.0" layoutY="355.0" maxHeight="-Infinity" maxWidth="-Infinity"
-                minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#register"
-                prefHeight="40.0" prefWidth="150.0" text="РЕГИСТРАЦИЯ" textAlignment="JUSTIFY">
-            <font>
-                <Font size="18.0"/>
-            </font>
-        </Button>
-        <Hyperlink fx:id="hlSettings" alignment="CENTER" contentDisplay="CENTER" layoutX="266.0" layoutY="399.0"
-                   onAction="#openSettings" text="Настройки"/>
+        <ImageView fx:id="imageView">
+            <image>
+                <Image url="@../../../../../../resources/ru/abenefic/cloudvault/client/controller/security-vault.jpg"/>
+            </image>
+        </ImageView>
+        <AnchorPane layoutX="170.0" layoutY="242.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+                    minWidth="-Infinity" prefHeight="170.0" prefWidth="260.0" style="-fx-background-color: FFFF;">
+            <Label alignment="CENTER" contentDisplay="RIGHT" text="Логин:" textAlignment="RIGHT"
+                   AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0">
+                <font>
+                    <Font size="14.0"/>
+                </font>
+            </Label>
+            <TextField fx:id="fldLogin" layoutX="78.0" layoutY="8.0" prefHeight="25.0" prefWidth="168.0"
+                       AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0"/>
+            <Label layoutX="10.0" layoutY="49.0" text="Пароль:" AnchorPane.leftAnchor="10.0"
+                   AnchorPane.topAnchor="50.0">
+                <font>
+                    <Font size="14.0"/>
+                </font>
+            </Label>
+            <PasswordField fx:id="fldPassword" layoutX="97.0" layoutY="47.0" prefHeight="25.0" prefWidth="168.0"
+                           AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="50.0"/>
+            <Button fx:id="btnLogin" defaultButton="true" layoutX="58.0" layoutY="86.0" maxHeight="-Infinity"
+                    maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false"
+                    onAction="#login" prefHeight="40.0" prefWidth="150.0" text="ВОЙТИ" textAlignment="JUSTIFY"
+                    textOverrun="CLIP">
+                <font>
+                    <Font size="18.0"/>
+                </font>
+            </Button>
+            <Hyperlink fx:id="hlSettings" alignment="CENTER" contentDisplay="CENTER" layoutX="186.0" layoutY="132.0"
+                       onAction="#openSettings" text="Настройки" AnchorPane.bottomAnchor="10.0"
+                       AnchorPane.rightAnchor="10.0"/>
+            <Hyperlink fx:id="hlRegister" layoutX="14.0" layoutY="144.0" onAction="#register" text="Регистрация"
+                       AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0"/>
+        </AnchorPane>
     </Pane>
 </AnchorPane>
