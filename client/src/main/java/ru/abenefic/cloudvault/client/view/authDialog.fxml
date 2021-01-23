@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -15,7 +16,8 @@
             <Image url="@../../../../../../resources/ru/abenefic/cloudvault/client/controller/security-vault.jpg"/>
         </ImageView>
         <AnchorPane layoutX="170.0" layoutY="242.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-                    minWidth="-Infinity" prefHeight="170.0" prefWidth="260.0" style="-fx-background-color: FFFF;">
+                    minWidth="-Infinity" opacity="0.8" prefHeight="170.0" prefWidth="260.0"
+                    style="-fx-background-color: FFFF;">
             <Label alignment="CENTER" contentDisplay="RIGHT" text="Логин:" textAlignment="RIGHT"
                    AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0">
                 <font>
@@ -45,6 +47,9 @@
                        AnchorPane.rightAnchor="10.0"/>
             <Hyperlink fx:id="hlRegister" layoutX="14.0" layoutY="144.0" onAction="#register" text="Регистрация"
                        AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0"/>
+            <opaqueInsets>
+                <Insets/>
+            </opaqueInsets>
         </AnchorPane>
     </Pane>
 </AnchorPane>
