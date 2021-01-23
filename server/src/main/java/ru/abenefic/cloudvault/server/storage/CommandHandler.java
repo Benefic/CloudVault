@@ -7,7 +7,7 @@ import ru.abenefic.cloudvault.common.Command;
 public class CommandHandler extends SimpleChannelInboundHandler<Command> {
 
     @Override
-    protected void channelRead0(ChannelHandlerContext channelHandlerContext, Command command) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, Command command) throws Exception {
 
     }
 }

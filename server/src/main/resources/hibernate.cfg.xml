@@ -14,6 +14,7 @@
         <property name="hibernate.connection.username">fv_server</property>
         <property name="hibernate.connection.password">112358</property>
 
+
         <!-- Specifying Session Context -->
         <property name="hibernate.current_session_context_class">
             org.hibernate.context.internal.ThreadLocalSessionContext

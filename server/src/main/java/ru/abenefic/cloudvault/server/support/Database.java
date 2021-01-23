@@ -1,9 +1,12 @@
 package ru.abenefic.cloudvault.server.support;
 
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+
+import java.io.Serializable;
 
 public class Database {
     private static SessionFactory sessionFactory;
@@ -31,4 +34,14 @@ public class Database {
             StandardServiceRegistryBuilder.destroy(registry);
         }
     }
+
+    public static Serializable saveInTransaction(Object obj) {
+        Session session = sessionFactory.openSession();
+        session.beginTransaction();
+        Serializable id = session.save(obj);
+        session.getTransaction().commit();
+        return id;
+    }
+
+
 }
