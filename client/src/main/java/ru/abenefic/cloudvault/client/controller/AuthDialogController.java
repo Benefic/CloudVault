@@ -15,7 +15,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.abenefic.cloudvault.client.Launcher;
 import ru.abenefic.cloudvault.client.network.Connection;
-import ru.abenefic.cloudvault.client.support.Config;
+import ru.abenefic.cloudvault.client.support.Context;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
@@ -49,10 +49,6 @@ public class AuthDialogController {
         }
     }
 
-    public void login(ActionEvent event) {
-
-    }
-
     public void openSettings(ActionEvent event) {
 
         try {
@@ -78,8 +74,26 @@ public class AuthDialogController {
         }
     }
 
+    public void login(ActionEvent event) throws NoSuchAlgorithmException {
+        prepareContext();
+        try {
+            new Connection().login(this);
+        } catch (InterruptedException e) {
+            LOG.error("register", e);
+        }
+    }
+
     public void register(ActionEvent event) throws NoSuchAlgorithmException {
-        Config.current().setLogin(fldLogin.getText());
+        prepareContext();
+        try {
+            new Connection().register(this);
+        } catch (InterruptedException e) {
+            LOG.error("register", e);
+        }
+    }
+
+    private void prepareContext() throws NoSuchAlgorithmException {
+        Context.current().setLogin(fldLogin.getText());
         String password = fldPassword.getText();
         MessageDigest md = MessageDigest.getInstance("MD5");
         md.update(password.getBytes());
@@ -87,12 +101,7 @@ public class AuthDialogController {
         String passwordHash = DatatypeConverter
                 .printHexBinary(digest).toUpperCase();
 
-        Config.current().setPassword(passwordHash);
-        try {
-            new Connection().register(this);
-        } catch (InterruptedException e) {
-            LOG.error("register", e);
-        }
+        Context.current().setPassword(passwordHash);
     }
 
     public void closeSettings() {

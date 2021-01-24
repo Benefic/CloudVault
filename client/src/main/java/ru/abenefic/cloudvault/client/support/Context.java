@@ -3,21 +3,21 @@ package ru.abenefic.cloudvault.client.support;
 import lombok.Data;
 
 @Data
-public class Config {
+public class Context {
 
-    private static Config current;
+    private static Context current;
 
     private int serverPort = 8189;
     private String serverHost = "localhost";
     private String login;
     private String password;
 
-    private Config() {
+    private Context() {
     }
 
-    public static Config current() {
+    public static Context current() {
         if (current == null) {
-            current = new Config();
+            current = new Context();
         }
         return current;
     }

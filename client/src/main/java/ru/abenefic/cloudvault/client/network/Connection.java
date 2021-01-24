@@ -14,16 +14,15 @@ import io.netty.handler.codec.serialization.ObjectEncoder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.abenefic.cloudvault.client.controller.AuthDialogController;
-import ru.abenefic.cloudvault.client.support.Config;
+import ru.abenefic.cloudvault.client.support.Context;
 
 public class Connection {
 
     private static final Logger LOG = LogManager.getLogger(Connection.class);
 
-    public void register(AuthDialogController handler) throws InterruptedException {
-
-        String host = Config.current().getServerHost();
-        int port = Config.current().getServerPort();
+    private void initHandler(AuthHandler authHandler) throws InterruptedException {
+        String host = Context.current().getServerHost();
+        int port = Context.current().getServerPort();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
 
         try {
@@ -32,13 +31,12 @@ public class Connection {
             b.channel(NioSocketChannel.class);
             b.option(ChannelOption.SO_KEEPALIVE, true);
             b.handler(new ChannelInitializer<SocketChannel>() {
-
                 @Override
                 public void initChannel(SocketChannel ch) throws Exception {
                     ch.pipeline().addLast(
                             new ObjectEncoder(),
                             new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
-                            new RegistrationHandler(handler));
+                            authHandler);
                 }
             });
 
@@ -48,5 +46,14 @@ public class Connection {
         } finally {
             workerGroup.shutdownGracefully();
         }
+
+    }
+
+    public void register(AuthDialogController handler) throws InterruptedException {
+        initHandler(new AuthHandler(handler, true));
+    }
+
+    public void login(AuthDialogController handler) throws InterruptedException {
+        initHandler(new AuthHandler(handler, false));
     }
 }

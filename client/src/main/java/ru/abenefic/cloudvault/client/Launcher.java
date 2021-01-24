@@ -8,7 +8,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import ru.abenefic.cloudvault.client.controller.AuthDialogController;
 import ru.abenefic.cloudvault.client.controller.FileManagerController;
-import ru.abenefic.cloudvault.client.support.Config;
+import ru.abenefic.cloudvault.client.support.Context;
 
 import java.io.IOException;
 
@@ -53,7 +53,7 @@ public class Launcher extends Application {
             Parent mainViewDialogPanel = mainViewLoader.load();
             Stage mainViewDialogStage = new Stage();
 
-            mainViewDialogStage.setTitle(Config.current().getLogin());
+            mainViewDialogStage.setTitle(Context.current().getLogin());
             mainViewDialogStage.initModality(Modality.NONE);
             mainViewDialogStage.setResizable(true);
             Scene scene = new Scene(mainViewDialogPanel);
