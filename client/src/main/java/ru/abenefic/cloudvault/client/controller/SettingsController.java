@@ -14,8 +14,8 @@ public class SettingsController {
 
     public void prepare(AuthDialogController owner) {
         this.owner = owner;
-        fldPort.setText(String.valueOf(Config.current().getSERVER_PORT()));
-        fldHost.setText(Config.current().getSERVER_HOST());
+        fldPort.setText(String.valueOf(Config.current().getServerPort()));
+        fldHost.setText(Config.current().getServerHost());
         fldPort.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d{0,7}")) {
                 fldPort.setText(oldValue);
@@ -24,8 +24,8 @@ public class SettingsController {
     }
 
     public void save(ActionEvent event) {
-        Config.current().setSERVER_HOST(fldHost.getText());
-        Config.current().setSERVER_PORT(Integer.parseInt(fldPort.getText()));
+        Config.current().setServerHost(fldHost.getText());
+        Config.current().setServerPort(Integer.parseInt(fldPort.getText()));
         owner.closeSettings();
     }
 }

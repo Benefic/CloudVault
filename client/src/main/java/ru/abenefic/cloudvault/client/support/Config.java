@@ -7,8 +7,10 @@ public class Config {
 
     private static Config current;
 
-    private int SERVER_PORT = 8189;
-    private String SERVER_HOST = "localhost";
+    private int serverPort = 8189;
+    private String serverHost = "localhost";
+    private String login;
+    private String password;
 
     private Config() {
     }

@@ -12,12 +12,13 @@ import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import ru.abenefic.cloudvault.server.support.AuthHandler;
 
 public class StorageServer {
+
     private static final Logger LOG = LogManager.getLogger(StorageServer.class);
 
     public StorageServer(int port) {
-
 
         EventLoopGroup auth = new NioEventLoopGroup(1);
         EventLoopGroup worker = new NioEventLoopGroup();
@@ -31,6 +32,7 @@ public class StorageServer {
                             channel.pipeline().addLast(
                                     new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
                                     new ObjectEncoder(),
+                                    new AuthHandler(),
                                     new CommandHandler());
                         }
                     });

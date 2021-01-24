@@ -11,7 +11,7 @@ class UserServiceTest {
     void register() {
         Authentication auth = new Authentication("user" + 1, "123456789");
         try {
-            User user = new UserService().register(auth);
+            User user = UserService.instance().register(auth);
             Assertions.assertNotNull(user);
         } catch (Exception e) {
             // логгер ту ни к чему
@@ -24,7 +24,7 @@ class UserServiceTest {
     void authorize() {
         Authentication auth = new Authentication("user" + 1, "123456789");
         try {
-            User user = new UserService().authorize(auth);
+            User user = UserService.instance().authorize(auth);
             Assertions.assertNotNull(user);
         } catch (Exception e) {
             e.printStackTrace();

@@ -2,9 +2,22 @@ package ru.abenefic.cloudvault.server.support;
 
 import org.hibernate.Session;
 import ru.abenefic.cloudvault.common.auth.Authentication;
+import ru.abenefic.cloudvault.common.auth.AuthorisationException;
 import ru.abenefic.cloudvault.server.model.User;
 
 public class UserService {
+
+    private static UserService instance;
+
+    private UserService() {
+    }
+
+    public static UserService instance() {
+        if (instance == null) {
+            instance = new UserService();
+        }
+        return instance;
+    }
 
     public User register(Authentication auth) throws Exception {
         // check login busy
@@ -14,7 +27,7 @@ public class UserService {
                 .using("login", auth.getLogin())
                 .load();
         if (user != null) {
-            throw new AuthorizationException("Login is busy");
+            throw new AuthorisationException("Login is busy");
         }
         // create user and return
         user = new User(auth.getLogin(), auth.getPassword());
@@ -30,9 +43,9 @@ public class UserService {
                 .using("login", auth.getLogin())
                 .load();
         if (user == null) {
-            throw new AuthorizationException("User not found!");
+            throw new AuthorisationException("User not found!");
         } else if (!user.getPassword().equals(auth.getPassword())) {
-            throw new AuthorizationException("Incorrect password!");
+            throw new AuthorisationException("Incorrect password!");
         } else {
             return user;
         }

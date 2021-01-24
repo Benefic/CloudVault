@@ -1,13 +1,11 @@
 package ru.abenefic.cloudvault.client.controller;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Hyperlink;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
@@ -16,9 +14,14 @@ import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.abenefic.cloudvault.client.Launcher;
+import ru.abenefic.cloudvault.client.network.Connection;
+import ru.abenefic.cloudvault.client.support.Config;
 
+import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class AuthDialogController {
 
@@ -73,11 +76,38 @@ public class AuthDialogController {
         }
     }
 
-    public void register(ActionEvent event) {
+    public void register(ActionEvent event) throws NoSuchAlgorithmException {
+        Config.current().setLogin(fldLogin.getText());
+        String password = fldPassword.getText();
+        MessageDigest md = MessageDigest.getInstance("MD5");
+        md.update(password.getBytes());
+        byte[] digest = md.digest();
+        String passwordHash = DatatypeConverter
+                .printHexBinary(digest).toUpperCase();
 
+        Config.current().setPassword(passwordHash);
+        try {
+            new Connection().register(this);
+        } catch (InterruptedException e) {
+            LOG.error("register", e);
+        }
     }
 
     public void closeSettings() {
         settingsDialogStage.close();
+    }
+
+    public void fireError(String error) {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Ошибка!");
+            alert.setHeaderText("Ошибка регистрации на сервере!");
+            alert.setContentText(error);
+            alert.showAndWait();
+        });
+    }
+
+    public void loginSuccess() {
+
     }
 }

@@ -15,7 +15,7 @@ public class Authentication implements Serializable {
     private String login;
     @NonNull
     private String password;
+    private String token;
     private boolean registration;
-    private boolean success;
-    private String reason;
+    private int userId;
 }
