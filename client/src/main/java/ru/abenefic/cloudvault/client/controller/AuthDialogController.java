@@ -27,6 +27,10 @@ public class AuthDialogController {
 
     private static final Logger LOG = LogManager.getLogger(AuthDialogController.class);
 
+    private Stage settingsDialogStage;
+    private Stage mainViewDialogStage;
+    private Launcher launcher;
+
     public ImageView imageView;
     public Pane container;
     public Button btnLogin;
@@ -35,16 +39,14 @@ public class AuthDialogController {
     public PasswordField fldPassword;
     public Hyperlink hlRegister;
 
-    private Stage settingsDialogStage;
-
-    public void prepare() {
+    public void prepare(Launcher launcher) {
+        this.launcher = launcher;
         try (InputStream input = getClass().getResourceAsStream("security-vault.jpg")) {
             Image image = new Image(input);
             imageView.setImage(image);
         } catch (IOException e) {
             LOG.error("Image load error:", e);
         }
-
     }
 
     public void login(ActionEvent event) {
@@ -108,6 +110,8 @@ public class AuthDialogController {
     }
 
     public void loginSuccess() {
-
+        Platform.runLater(() -> {
+            launcher.openVault();
+        });
     }
 }

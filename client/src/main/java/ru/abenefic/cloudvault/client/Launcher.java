@@ -7,6 +7,10 @@ import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import ru.abenefic.cloudvault.client.controller.AuthDialogController;
+import ru.abenefic.cloudvault.client.controller.FileManagerController;
+import ru.abenefic.cloudvault.client.support.Config;
+
+import java.io.IOException;
 
 public class Launcher extends Application {
 
@@ -35,6 +39,34 @@ public class Launcher extends Application {
         authDialogStage.show();
 
         AuthDialogController authController = authLoader.getController();
-        authController.prepare();
+        authController.prepare(this);
     }
+
+    public void openVault() {
+        try {
+
+            authDialogStage.close();
+
+            FXMLLoader mainViewLoader = new FXMLLoader();
+
+            mainViewLoader.setLocation(Launcher.class.getResource("view/cloudVault.fxml"));
+            Parent mainViewDialogPanel = mainViewLoader.load();
+            Stage mainViewDialogStage = new Stage();
+
+            mainViewDialogStage.setTitle(Config.current().getLogin());
+            mainViewDialogStage.initModality(Modality.NONE);
+            mainViewDialogStage.setResizable(true);
+            Scene scene = new Scene(mainViewDialogPanel);
+            mainViewDialogStage.setScene(scene);
+            mainViewDialogStage.show();
+
+            FileManagerController fileManagerController = mainViewLoader.getController();
+            fileManagerController.prepare(this);
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
