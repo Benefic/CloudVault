@@ -11,6 +11,7 @@ public class Context {
     private String serverHost = "localhost";
     private String login;
     private String password;
+    private String token;
 
     private Context() {
     }

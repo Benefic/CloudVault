@@ -19,7 +19,7 @@
         <property name="hibernate.current_session_context_class">
             org.hibernate.context.internal.ThreadLocalSessionContext
         </property>
-
+        <property name="show_sql">true</property>
         <!-- Mapping With Model Class Containing Annotations -->
         <mapping class="ru.abenefic.cloudvault.server.model.User"/>
     </session-factory>

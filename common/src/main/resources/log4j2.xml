@@ -8,7 +8,7 @@
         <Console name="LogToConsole" target="SYSTEM_OUT">
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %c{1.} - %msg%n"/>
         </Console>
-        <RollingFile name="LogToRollingFile" fileName="logs/server.log"
+        <RollingFile name="LogToRollingFile" fileName="logs/cloudvault.log"
                      filePattern="logs/$${date:yyyy-MM}/server-%d{MM-dd-yyyy}-%i.log.gz">
             <PatternLayout>
                 <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
@@ -26,7 +26,7 @@
             <AppenderRef ref="LogToRollingFile"/>
             <AppenderRef ref="LogToConsole"/>
         </Logger>
-        <Root level="info">
+        <Root level="debug">
             <AppenderRef ref="LogToConsole"/>
         </Root>
     </Loggers>

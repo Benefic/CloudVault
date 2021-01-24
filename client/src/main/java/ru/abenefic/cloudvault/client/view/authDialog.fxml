@@ -16,7 +16,7 @@
             <Image url="@../../../../../../resources/ru/abenefic/cloudvault/client/controller/security-vault.jpg"/>
         </ImageView>
         <AnchorPane layoutX="170.0" layoutY="242.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-                    minWidth="-Infinity" opacity="0.8" prefHeight="170.0" prefWidth="260.0"
+                    minWidth="-Infinity" opacity="0.9" prefHeight="170.0" prefWidth="260.0"
                     style="-fx-background-color: FFFF;">
             <Label alignment="CENTER" contentDisplay="RIGHT" text="Логин:" textAlignment="RIGHT"
                    AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0">

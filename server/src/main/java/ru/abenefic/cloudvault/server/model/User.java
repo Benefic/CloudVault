@@ -20,12 +20,13 @@ public class User {
     @GeneratedValue(generator = "increment")
     @GenericGenerator(name = "increment", strategy = "increment")
     private int id;
+
     @NonNull
     @NaturalId
     @Column(name = "login", nullable = false, unique = true)
     private String login;
+
     @NonNull
     private String password;
-
 
 }

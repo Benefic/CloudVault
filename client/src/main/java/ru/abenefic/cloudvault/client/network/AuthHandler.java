@@ -35,6 +35,7 @@ public class AuthHandler extends ChannelInboundHandlerAdapter {
         if (msg instanceof AuthorisationException) {
             handler.fireError(((AuthorisationException) msg).getMessage());
         } else {
+            Context.current().setToken(((Authentication) msg).getToken());
             handler.loginSuccess();
         }
         ctx.close();

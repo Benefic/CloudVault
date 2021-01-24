@@ -1,5 +1,7 @@
 package ru.abenefic.cloudvault.server.support;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.MetadataSources;
@@ -9,6 +11,8 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import java.io.Serializable;
 
 public class Database {
+    private static final Logger LOG = LogManager.getLogger(Database.class);
+
     private static SessionFactory sessionFactory;
 
     private Database() {
@@ -32,6 +36,7 @@ public class Database {
             // The registry would be destroyed by the SessionFactory, but we had trouble building the SessionFactory
             // so destroy it manually.
             StandardServiceRegistryBuilder.destroy(registry);
+            LOG.error("Database error", e);
         }
     }
 
