@@ -1,6 +1,9 @@
 package ru.abenefic.cloudvault.server.storage;
 
 import ru.abenefic.cloudvault.common.commands.DirectoryTree;
+import ru.abenefic.cloudvault.common.commands.FileItem;
+import ru.abenefic.cloudvault.common.commands.FileTreeItem;
+import ru.abenefic.cloudvault.common.commands.FilesList;
 import ru.abenefic.cloudvault.server.model.User;
 import ru.abenefic.cloudvault.server.support.Configuration;
 
@@ -10,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Set;
 
 public class StorageProvider {
     static DirectoryTree getUserTree(User user) throws Exception {
@@ -29,7 +33,7 @@ public class StorageProvider {
                     @Override
                     public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
                         if (dir != userRoot) {
-                            tree.add(new DirectoryTree.TreeItem(
+                            tree.add(new FileTreeItem(
                                     dir.getFileName().toString(),
                                     userRoot.relativize(dir).toString()));
                         }
@@ -38,5 +42,27 @@ public class StorageProvider {
                 }
         );
         return tree;
+    }
+
+    static FilesList getFilesList(User user, String parentPath) throws IOException {
+        FilesList list = new FilesList();
+
+        Path directory = Path.of(
+                Configuration.getInstance().getSrvRootDirectory(),
+                String.valueOf(user.getId()),
+                "\\",
+                parentPath);
+
+        Files.walkFileTree(directory, Set.of(), 1,
+                new SimpleFileVisitor<>() {
+                    @Override
+                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                        list.add(FileItem.fromPath(file, attrs.creationTime()));
+                        return super.visitFile(file, attrs);
+                    }
+                }
+        );
+
+        return list;
     }
 }

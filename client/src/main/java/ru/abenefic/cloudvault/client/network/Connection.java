@@ -17,6 +17,7 @@ import ru.abenefic.cloudvault.client.controller.AuthDialogController;
 import ru.abenefic.cloudvault.client.controller.FileManagerController;
 import ru.abenefic.cloudvault.client.support.Context;
 import ru.abenefic.cloudvault.common.Command;
+import ru.abenefic.cloudvault.common.commands.StringData;
 
 public class Connection {
 
@@ -63,4 +64,7 @@ public class Connection {
         initHandler(new CommandHandler(controller, Command.getTreeCommand()));
     }
 
+    public void getFilesList(FileManagerController controller, String path) {
+        initHandler(new CommandHandler(controller, Command.getFilesCommand(new StringData(path))));
+    }
 }

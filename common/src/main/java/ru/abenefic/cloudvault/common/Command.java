@@ -22,6 +22,13 @@ public class Command implements Serializable {
         return command;
     }
 
+    public static Command getFilesCommand(CommandData commandData) {
+        Command command = new Command();
+        command.type = CommandType.GET_FILES;
+        command.data = commandData;
+        return command;
+    }
+
     public static Command filePartTransferCommand(String fileName, byte[] fileData, boolean isEnd) {
         Command command = new Command();
         command.type = CommandType.FILE_TRANSFER;

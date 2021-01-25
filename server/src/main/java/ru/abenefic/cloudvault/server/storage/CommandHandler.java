@@ -8,6 +8,8 @@ import org.apache.logging.log4j.Logger;
 import ru.abenefic.cloudvault.common.Command;
 import ru.abenefic.cloudvault.common.auth.AuthorisationException;
 import ru.abenefic.cloudvault.common.commands.DirectoryTree;
+import ru.abenefic.cloudvault.common.commands.FilesList;
+import ru.abenefic.cloudvault.common.commands.StringData;
 import ru.abenefic.cloudvault.server.model.User;
 
 @ChannelHandler.Sharable
@@ -40,6 +42,10 @@ public class CommandHandler extends SimpleChannelInboundHandler<Command> {
                     response = Command.getTreeCommand();
                     response.setData(tree);
                 }
+                case GET_FILES -> {
+                    FilesList list = StorageProvider.getFilesList(user, ((StringData) command.getData()).getData());
+                    response = Command.getFilesCommand(list);
+                }
                 default -> throw new IllegalStateException("Unexpected value: " + command.getType());
             }
             ctx.writeAndFlush(response);
@@ -47,7 +53,7 @@ public class CommandHandler extends SimpleChannelInboundHandler<Command> {
     }
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         LOG.error("Command error", cause);
         ctx.close();
     }

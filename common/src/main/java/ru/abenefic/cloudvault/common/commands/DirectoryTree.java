@@ -1,19 +1,16 @@
 package ru.abenefic.cloudvault.common.commands;
 
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NonNull;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 @Data
 public class DirectoryTree implements CommandData {
 
-    private final ArrayList<TreeItem> children = new ArrayList<>();
+    private final ArrayList<FileTreeItem> children = new ArrayList<>();
 
-    public void add(TreeItem item) {
+    public void add(FileTreeItem item) {
         children.add(item);
     }
 
@@ -24,17 +21,4 @@ public class DirectoryTree implements CommandData {
                 '}';
     }
 
-    @Data
-    @AllArgsConstructor
-    public static class TreeItem implements Serializable {
-        @NonNull
-        private String name;
-        @NonNull
-        private String path;
-
-        @Override
-        public String toString() {
-            return name;
-        }
-    }
 }
