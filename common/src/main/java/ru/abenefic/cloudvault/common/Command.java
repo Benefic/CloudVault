@@ -14,6 +14,20 @@ public class Command implements Serializable {
 
     private CommandType type;
     private CommandData data;
+    private String token;
+
+    public static Command getTreeCommand() {
+        Command command = new Command();
+        command.type = CommandType.GET_TREE;
+        return command;
+    }
+
+    public static Command getFilesCommand(CommandData commandData) {
+        Command command = new Command();
+        command.type = CommandType.GET_FILES;
+        command.data = commandData;
+        return command;
+    }
 
     public static Command filePartTransferCommand(String fileName, byte[] fileData, boolean isEnd) {
         Command command = new Command();
@@ -34,6 +48,18 @@ public class Command implements Serializable {
 
     public CommandData getData() {
         return data;
+    }
+
+    public void setData(CommandData data) {
+        this.data = data;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     @Override

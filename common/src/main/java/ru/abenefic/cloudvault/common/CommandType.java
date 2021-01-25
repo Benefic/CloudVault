@@ -5,6 +5,8 @@
 package ru.abenefic.cloudvault.common;
 
 public enum CommandType {
+    GET_TREE,
+    GET_FILES,
     FILE_TRANSFER,
     EXIT
 }

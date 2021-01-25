@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="450.0" prefWidth="600.0"
+            xmlns="http://javafx.com/javafx/11.0.1"
+            fx:controller="ru.abenefic.cloudvault.client.controller.AuthDialogController">
+    <Pane fx:id="container" layoutX="14.0" layoutY="14.0" prefHeight="450.0" prefWidth="600.0"
+          AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+          AnchorPane.topAnchor="0.0">
+        <ImageView fx:id="imageView">
+            <Image url="@../../../../../../resources/ru/abenefic/cloudvault/client/controller/security-vault.jpg"/>
+        </ImageView>
+        <AnchorPane layoutX="170.0" layoutY="242.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+                    minWidth="-Infinity" opacity="0.9" prefHeight="170.0" prefWidth="260.0"
+                    style="-fx-background-color: FFFF;">
+            <Label alignment="CENTER" contentDisplay="RIGHT" text="Логин:" textAlignment="RIGHT"
+                   AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0">
+                <font>
+                    <Font size="14.0"/>
+                </font>
+            </Label>
+            <TextField fx:id="fldLogin" layoutX="78.0" layoutY="8.0" prefHeight="25.0" prefWidth="168.0"
+                       AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0"/>
+            <Label layoutX="10.0" layoutY="49.0" text="Пароль:" AnchorPane.leftAnchor="10.0"
+                   AnchorPane.topAnchor="50.0">
+                <font>
+                    <Font size="14.0"/>
+                </font>
+            </Label>
+            <PasswordField fx:id="fldPassword" layoutX="97.0" layoutY="47.0" prefHeight="25.0" prefWidth="168.0"
+                           AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="50.0"/>
+            <Button fx:id="btnLogin" defaultButton="true" layoutX="58.0" layoutY="86.0" maxHeight="-Infinity"
+                    maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false"
+                    onAction="#login" prefHeight="40.0" prefWidth="150.0" text="ВОЙТИ" textAlignment="JUSTIFY"
+                    textOverrun="CLIP">
+                <font>
+                    <Font size="18.0"/>
+                </font>
+            </Button>
+            <Hyperlink fx:id="hlSettings" alignment="CENTER" contentDisplay="CENTER" layoutX="186.0" layoutY="132.0"
+                       onAction="#openSettings" text="Настройки" AnchorPane.bottomAnchor="10.0"
+                       AnchorPane.rightAnchor="10.0"/>
+            <Hyperlink fx:id="hlRegister" layoutX="14.0" layoutY="144.0" onAction="#register" text="Регистрация"
+                       AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0"/>
+            <opaqueInsets>
+                <Insets/>
+            </opaqueInsets>
+        </AnchorPane>
+    </Pane>
+</AnchorPane>
