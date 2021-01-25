@@ -30,9 +30,9 @@ public class FileManagerController {
     private static final Logger LOG = LogManager.getLogger(FileManagerController.class);
 
     private final Image folderIcon = new Image(getClass().getResourceAsStream("folder.png"));
+    private final Node rootIcon = new ImageView(folderIcon);
     private final TreeItem<FileTreeItem> rootNode = new TreeItem<>(new FileTreeItem("Сервер", "root"), rootIcon);
     private Launcher mainApp;
-    private final Node rootIcon = new ImageView(folderIcon);
     public VBox tableBox;
     public TreeView<FileTreeItem> treeView;
 
