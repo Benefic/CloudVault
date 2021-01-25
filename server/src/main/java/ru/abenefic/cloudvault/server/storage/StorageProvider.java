@@ -28,7 +28,11 @@ public class StorageProvider {
 
                     @Override
                     public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                        tree.add(new DirectoryTree.TreeItem(dir.getFileName().toString(), dir.toString()));
+                        if (dir != userRoot) {
+                            tree.add(new DirectoryTree.TreeItem(
+                                    dir.getFileName().toString(),
+                                    userRoot.relativize(dir).toString()));
+                        }
                         return super.preVisitDirectory(dir, attrs);
                     }
                 }

@@ -8,12 +8,20 @@ import lombok.NonNull;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+@Data
 public class DirectoryTree implements CommandData {
 
     private final ArrayList<TreeItem> children = new ArrayList<>();
 
     public void add(TreeItem item) {
         children.add(item);
+    }
+
+    @Override
+    public String toString() {
+        return "DirectoryTree{" +
+                "children=" + children +
+                '}';
     }
 
     @Data
@@ -23,5 +31,10 @@ public class DirectoryTree implements CommandData {
         private String name;
         @NonNull
         private String path;
+
+        @Override
+        public String toString() {
+            return name;
+        }
     }
 }

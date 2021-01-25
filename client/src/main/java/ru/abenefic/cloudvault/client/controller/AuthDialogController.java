@@ -28,7 +28,6 @@ public class AuthDialogController {
     private static final Logger LOG = LogManager.getLogger(AuthDialogController.class);
 
     private Stage settingsDialogStage;
-    private Stage mainViewDialogStage;
     private Launcher launcher;
 
     public ImageView imageView;
@@ -47,6 +46,16 @@ public class AuthDialogController {
         } catch (IOException e) {
             LOG.error("Image load error:", e);
         }
+
+        //TODO remove
+        fldLogin.setText("user1");
+        fldPassword.setText("112358");
+        try {
+            login(null);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public void openSettings(ActionEvent event) {
