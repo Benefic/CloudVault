@@ -48,13 +48,13 @@ public class AuthDialogController {
         }
 
         //TODO remove
-        fldLogin.setText("user1");
-        fldPassword.setText("112358");
-        try {
-            login(null);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
+//        fldLogin.setText("user1");
+//        fldPassword.setText("112358");
+//        try {
+//            login(null);
+//        } catch (NoSuchAlgorithmException e) {
+//            e.printStackTrace();
+//        }
 
     }
 
