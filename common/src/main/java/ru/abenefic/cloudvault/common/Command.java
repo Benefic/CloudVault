@@ -29,10 +29,10 @@ public class Command implements Serializable {
         return command;
     }
 
-    public static Command filePartTransferCommand(String fileName, byte[] fileData, boolean isEnd) {
+    public static Command filePartTransferCommand(String fileName, byte[] fileData, int dataLength) {
         Command command = new Command();
         command.type = CommandType.FILE_TRANSFER;
-        command.data = new FilePart(fileName, fileData, isEnd);
+        command.data = new FilePart(fileName, fileData, dataLength);
         return command;
     }
 

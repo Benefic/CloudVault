@@ -1,9 +1,6 @@
 package ru.abenefic.cloudvault.server.storage;
 
-import ru.abenefic.cloudvault.common.commands.DirectoryTree;
-import ru.abenefic.cloudvault.common.commands.FileItem;
-import ru.abenefic.cloudvault.common.commands.FileTreeItem;
-import ru.abenefic.cloudvault.common.commands.FilesList;
+import ru.abenefic.cloudvault.common.commands.*;
 import ru.abenefic.cloudvault.server.model.User;
 import ru.abenefic.cloudvault.server.support.Configuration;
 
@@ -64,5 +61,10 @@ public class StorageProvider {
         );
 
         return list;
+    }
+
+    static boolean writeFilePart(User user, FilePart filePart) {
+        //TODO
+        return true;
     }
 }

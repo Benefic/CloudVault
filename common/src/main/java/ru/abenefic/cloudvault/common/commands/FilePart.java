@@ -5,28 +5,21 @@
 package ru.abenefic.cloudvault.common.commands;
 
 public class FilePart implements CommandData {
+
+    public static final int partSize = 1_048_576;
+
     private final String fileName;
-    private final boolean isEnd;
     private final byte[] data;
+    private final int dataLength;
 
-    public FilePart(String fileName, byte[] data, boolean isEnd) {
+    public FilePart(String fileName, byte[] data, int dataLength) {
         this.fileName = fileName;
-        this.isEnd = isEnd;
         this.data = data;
-    }
-
-    public FilePart(String fileName, byte[] data) {
-        this.fileName = fileName;
-        this.isEnd = false;
-        this.data = data;
+        this.dataLength = dataLength;
     }
 
     public String getFileName() {
         return fileName;
-    }
-
-    public boolean isEnd() {
-        return isEnd;
     }
 
     public byte[] getData() {
@@ -37,10 +30,12 @@ public class FilePart implements CommandData {
     public String toString() {
         return "FilePart{" +
                 "fileName='" + fileName + '\'' +
-                ", isEnd=" + isEnd +
                 ", data length=" + data.length +
                 '}';
     }
 
 
+    public int getDataLength() {
+        return dataLength;
+    }
 }
