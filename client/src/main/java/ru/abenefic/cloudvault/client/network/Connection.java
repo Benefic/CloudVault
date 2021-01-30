@@ -67,4 +67,8 @@ public class Connection {
     public void getFilesList(FileManagerController controller, String path) {
         initHandler(new CommandHandler(controller, Command.getFilesCommand(new StringData(path))));
     }
+
+    public void uploadFile(FileManagerController controller, String path) {
+        LOG.info("Uploading " + path);
+    }
 }

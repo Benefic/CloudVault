@@ -1,10 +1,10 @@
 package ru.abenefic.cloudvault.client.controller;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
@@ -22,12 +22,12 @@ public class SettingsController {
 
     private static final Logger LOG = LogManager.getLogger(SettingsController.class);
 
-
     public TextField fldHost;
     public TextField fldPort;
     public Button btnSave;
     public Button btnDirectoryChoose;
     public TextField fldDirectory;
+    public CheckBox cbAutoUpload;
 
     private SettingsSaveListener owner;
 
@@ -64,6 +64,7 @@ public class SettingsController {
             }
         });
         fldDirectory.setText(context.getUserHome().toString());
+        cbAutoUpload.setSelected(context.isAutoUpload());
         return this;
     }
 
@@ -71,16 +72,17 @@ public class SettingsController {
         this.owner = listener;
     }
 
-    public void save(ActionEvent event) {
+    public void save() {
         Context context = Context.current();
         context.setServerHost(fldHost.getText());
         context.setServerPort(Integer.parseInt(fldPort.getText()));
         context.setUserHome(Paths.get(fldDirectory.getText()));
+        context.setAutoUpload(cbAutoUpload.isSelected());
         context.saveSettings();
         owner.onSave();
     }
 
-    public void selectDirectory(ActionEvent actionEvent) {
+    public void selectDirectory() {
         Context context = Context.current();
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setInitialDirectory(context.getUserHome().toFile());

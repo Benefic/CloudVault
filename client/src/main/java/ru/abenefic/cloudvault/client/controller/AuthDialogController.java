@@ -21,10 +21,10 @@ import java.security.NoSuchAlgorithmException;
 public class AuthDialogController {
 
     private static final Logger LOG = LogManager.getLogger(AuthDialogController.class);
-    public CheckBox cbSavePassword;
 
     private Launcher launcher;
 
+    public CheckBox cbSavePassword;
     public ImageView imageView;
     public Pane container;
     public Button btnLogin;

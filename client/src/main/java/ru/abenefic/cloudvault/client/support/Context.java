@@ -30,6 +30,7 @@ public class Context {
     private Path clientHome;
     private Path userHome;
     private boolean savePassword;
+    private boolean autoUpload;
 
     private Context() {
         // получим домашний каталог пользователя.
@@ -68,6 +69,7 @@ public class Context {
             password = property.getProperty("password", password);
             userHome = Path.of(property.getProperty("userHome", userHome.toString()));
             savePassword = Boolean.parseBoolean(property.getProperty("savePassword", "false"));
+            autoUpload = Boolean.parseBoolean(property.getProperty("autoUpload", "false"));
         } catch (IOException e) {
             LOG.error("Read property", e);
             // не смогли прочитать, будут значения по умолчанию
@@ -101,6 +103,7 @@ public class Context {
         property.setProperty("login", login);
         property.setProperty("userHome", String.valueOf(userHome));
         property.setProperty("savePassword", String.valueOf(savePassword));
+        property.setProperty("autoUpload", String.valueOf(autoUpload));
         if (savePassword) {
             property.setProperty("password", password);
         }
