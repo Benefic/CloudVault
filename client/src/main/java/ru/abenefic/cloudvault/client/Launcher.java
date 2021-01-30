@@ -45,7 +45,7 @@ public class Launcher extends Application {
     public void openVault() {
         try {
 
-            authDialogStage.close();
+            authDialogStage.hide();
 
             FXMLLoader mainViewLoader = new FXMLLoader();
 
@@ -61,7 +61,10 @@ public class Launcher extends Application {
             mainViewDialogStage.show();
 
             FileManagerController fileManagerController = mainViewLoader.getController();
-            fileManagerController.prepare();
+            fileManagerController.prepare().setLogoutListener(() -> {
+                mainViewDialogStage.close();
+                authDialogStage.show();
+            });
 
 
         } catch (IOException e) {

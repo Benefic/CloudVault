@@ -108,6 +108,7 @@ public class AuthDialogController {
 
     public void loginSuccess() {
         Platform.runLater(() -> {
+            fldPassword.setText("");
             launcher.openVault();
         });
     }

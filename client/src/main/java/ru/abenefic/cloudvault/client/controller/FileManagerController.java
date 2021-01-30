@@ -29,19 +29,24 @@ public class FileManagerController {
     private final Image folderIcon = new Image(getClass().getResourceAsStream("folder.png"));
     private final Node rootIcon = new ImageView(folderIcon);
     private final TreeItem<FileTreeItem> rootNode = new TreeItem<>(new FileTreeItem("Сервер", "root"), rootIcon);
+    private LogoutListener logoutListener;
     public Button btnSettings;
     public VBox tableBox;
     public TreeView<FileTreeItem> treeView;
     public Button btnExit;
 
-    public void prepare() {
+    public FileManagerController prepare() {
         drawButtons();
         rootNode.setExpanded(true);
         updateTree();
         treeView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldItem, newItem) -> {
             new Connection().getFilesList(this, newItem.getValue().getPath());
         });
+        return this;
+    }
 
+    public void setLogoutListener(LogoutListener listener) {
+        this.logoutListener = listener;
     }
 
     private void drawButtons() {
@@ -149,6 +154,6 @@ public class FileManagerController {
     }
 
     public void exit(ActionEvent actionEvent) {
-
+        logoutListener.logout();
     }
 }
