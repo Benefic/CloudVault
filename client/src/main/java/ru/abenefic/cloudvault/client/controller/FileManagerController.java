@@ -4,18 +4,15 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
+import javafx.event.ActionEvent;
 import javafx.scene.Node;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ru.abenefic.cloudvault.client.Launcher;
 import ru.abenefic.cloudvault.client.network.Connection;
 import ru.abenefic.cloudvault.common.Command;
 import ru.abenefic.cloudvault.common.CommandType;
@@ -32,18 +29,22 @@ public class FileManagerController {
     private final Image folderIcon = new Image(getClass().getResourceAsStream("folder.png"));
     private final Node rootIcon = new ImageView(folderIcon);
     private final TreeItem<FileTreeItem> rootNode = new TreeItem<>(new FileTreeItem("Сервер", "root"), rootIcon);
-    private Launcher mainApp;
+    public Button btnSettings;
     public VBox tableBox;
     public TreeView<FileTreeItem> treeView;
 
-    public void prepare(Launcher authDialogController) {
-        mainApp = authDialogController;
+    public void prepare() {
+        drawButtons();
         rootNode.setExpanded(true);
         updateTree();
         treeView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldItem, newItem) -> {
             new Connection().getFilesList(this, newItem.getValue().getPath());
         });
 
+    }
+
+    private void drawButtons() {
+        btnSettings.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("settings.png"))));
     }
 
     private void updateTree() {
@@ -141,4 +142,7 @@ public class FileManagerController {
     }
 
 
+    public void openSettings(ActionEvent actionEvent) {
+        SettingsController.openSettings();
+    }
 }

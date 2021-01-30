@@ -61,7 +61,7 @@ public class Launcher extends Application {
             mainViewDialogStage.show();
 
             FileManagerController fileManagerController = mainViewLoader.getController();
-            fileManagerController.prepare(this);
+            fileManagerController.prepare();
 
 
         } catch (IOException e) {

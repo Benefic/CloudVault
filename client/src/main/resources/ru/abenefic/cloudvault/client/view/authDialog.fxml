@@ -13,10 +13,10 @@
           AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
           AnchorPane.topAnchor="0.0">
         <ImageView fx:id="imageView">
-            <Image url="@../../../../../../resources/ru/abenefic/cloudvault/client/controller/security-vault.jpg"/>
+            <Image url="@../controller/security-vault.jpg"/>
         </ImageView>
         <AnchorPane layoutX="170.0" layoutY="242.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-                    minWidth="-Infinity" opacity="0.9" prefHeight="170.0" prefWidth="260.0"
+                    minWidth="-Infinity" opacity="0.9" prefHeight="190.0" prefWidth="260.0"
                     style="-fx-background-color: FFFF;">
             <Label alignment="CENTER" contentDisplay="RIGHT" text="Логин:" textAlignment="RIGHT"
                    AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0">
@@ -34,10 +34,12 @@
             </Label>
             <PasswordField fx:id="fldPassword" layoutX="97.0" layoutY="47.0" prefHeight="25.0" prefWidth="168.0"
                            AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="50.0"/>
+            <CheckBox fx:id="cbSavePassword" layoutX="82.0" layoutY="67.0" mnemonicParsing="false" text="Запомнить"
+                      AnchorPane.bottomAnchor="90.0"/>
             <Button fx:id="btnLogin" defaultButton="true" layoutX="58.0" layoutY="86.0" maxHeight="-Infinity"
                     maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false"
                     onAction="#login" prefHeight="40.0" prefWidth="150.0" text="ВОЙТИ" textAlignment="JUSTIFY"
-                    textOverrun="CLIP">
+                    textOverrun="CLIP" AnchorPane.bottomAnchor="40.0">
                 <font>
                     <Font size="18.0"/>
                 </font>

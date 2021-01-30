@@ -2,15 +2,10 @@ package ru.abenefic.cloudvault.client.controller;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.abenefic.cloudvault.client.Launcher;
@@ -26,8 +21,8 @@ import java.security.NoSuchAlgorithmException;
 public class AuthDialogController {
 
     private static final Logger LOG = LogManager.getLogger(AuthDialogController.class);
+    public CheckBox cbSavePassword;
 
-    private Stage settingsDialogStage;
     private Launcher launcher;
 
     public ImageView imageView;
@@ -47,44 +42,29 @@ public class AuthDialogController {
             LOG.error("Image load error:", e);
         }
 
-        //TODO remove
-//        fldLogin.setText("user1");
-//        fldPassword.setText("112358");
-//        try {
-//            login(null);
-//        } catch (NoSuchAlgorithmException e) {
-//            e.printStackTrace();
-//        }
+        Context context = Context.current();
+        fldLogin.setText(context.getLogin());
+        cbSavePassword.setSelected(context.isSavePassword());
+        if (context.isSavePassword() && !context.getPassword().isBlank() && !context.getLogin().isBlank()) {
+            try {
+                loginOnServer();
+            } catch (Exception e) {
+                LOG.error("Login failed", e);
+            }
+        }
 
     }
 
     public void openSettings(ActionEvent event) {
-
-        try {
-
-            FXMLLoader settingsLoader = new FXMLLoader();
-
-            settingsLoader.setLocation(Launcher.class.getResource("view/settingsDialog.fxml"));
-            Parent settingsDialogPanel = settingsLoader.load();
-            settingsDialogStage = new Stage();
-
-            settingsDialogStage.setTitle("Cloud Vault");
-            settingsDialogStage.initModality(Modality.WINDOW_MODAL);
-            settingsDialogStage.setResizable(false);
-            Scene scene = new Scene(settingsDialogPanel);
-            settingsDialogStage.setScene(scene);
-            settingsDialogStage.show();
-
-            SettingsController settingsController = settingsLoader.getController();
-            settingsController.prepare(this);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        SettingsController.openSettings();
     }
 
     public void login(ActionEvent event) throws NoSuchAlgorithmException {
         prepareContext();
+        loginOnServer();
+    }
+
+    private void loginOnServer() {
         try {
             new Connection().login(this);
         } catch (InterruptedException e) {
@@ -102,7 +82,8 @@ public class AuthDialogController {
     }
 
     private void prepareContext() throws NoSuchAlgorithmException {
-        Context.current().setLogin(fldLogin.getText());
+        Context context = Context.current();
+        context.setLogin(fldLogin.getText());
         String password = fldPassword.getText();
         MessageDigest md = MessageDigest.getInstance("MD5");
         md.update(password.getBytes());
@@ -110,11 +91,9 @@ public class AuthDialogController {
         String passwordHash = DatatypeConverter
                 .printHexBinary(digest).toUpperCase();
 
-        Context.current().setPassword(passwordHash);
-    }
-
-    public void closeSettings() {
-        settingsDialogStage.close();
+        context.setPassword(passwordHash);
+        context.setSavePassword(cbSavePassword.isSelected());
+        context.saveSettings();
     }
 
     public void fireError(String error) {
