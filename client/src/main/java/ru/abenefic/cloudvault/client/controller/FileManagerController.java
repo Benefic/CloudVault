@@ -32,6 +32,7 @@ public class FileManagerController {
     public Button btnSettings;
     public VBox tableBox;
     public TreeView<FileTreeItem> treeView;
+    public Button btnExit;
 
     public void prepare() {
         drawButtons();
@@ -45,6 +46,7 @@ public class FileManagerController {
 
     private void drawButtons() {
         btnSettings.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("settings.png"))));
+        btnExit.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("logout.png"))));
     }
 
     private void updateTree() {
@@ -144,5 +146,9 @@ public class FileManagerController {
 
     public void openSettings(ActionEvent actionEvent) {
         SettingsController.openSettings();
+    }
+
+    public void exit(ActionEvent actionEvent) {
+
     }
 }
