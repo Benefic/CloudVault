@@ -8,9 +8,7 @@ package ru.abenefic.cloudvault.common;
 import ru.abenefic.cloudvault.common.commands.CommandData;
 import ru.abenefic.cloudvault.common.commands.FilePart;
 
-import java.io.Serializable;
-
-public class Command implements Serializable {
+public class Command implements NetworkCommand {
 
     private CommandType type;
     private CommandData data;

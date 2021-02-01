@@ -4,38 +4,33 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ru.abenefic.cloudvault.client.controller.FileManagerController;
-import ru.abenefic.cloudvault.client.support.Context;
-import ru.abenefic.cloudvault.common.Command;
+import ru.abenefic.cloudvault.common.NetworkCommand;
 
 public class CommandHandler extends ChannelInboundHandlerAdapter {
 
     private static final Logger LOG = LogManager.getLogger(CommandHandler.class);
-    private final FileManagerController controller;
-    private final Command command;
+    private final CommandCallback controller;
+    private final OnConnectedCallback connectedCallback;
 
-    public CommandHandler(FileManagerController controller, Command command) {
+    public CommandHandler(CommandCallback controller, OnConnectedCallback connectedCallback) {
         this.controller = controller;
-        this.command = command;
-        command.setToken(Context.current().getToken());
+        this.connectedCallback = connectedCallback;
     }
 
     @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        ctx.writeAndFlush(command);
+    public void channelActive(ChannelHandlerContext ctx) {
+        connectedCallback.call();
     }
 
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+    public void channelRead(ChannelHandlerContext ctx, Object msg) {
         LOG.info(msg);
-        controller.onCommandSuccess((Command) msg);
-        ctx.close();
+        controller.call((NetworkCommand) msg);
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         LOG.error("Command error (client)", cause);
-        ctx.close();
     }
 
 

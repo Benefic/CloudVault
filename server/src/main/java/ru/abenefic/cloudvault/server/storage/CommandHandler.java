@@ -1,6 +1,5 @@
 package ru.abenefic.cloudvault.server.storage;
 
-import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.apache.logging.log4j.LogManager;
@@ -12,7 +11,6 @@ import ru.abenefic.cloudvault.common.commands.FilesList;
 import ru.abenefic.cloudvault.common.commands.StringData;
 import ru.abenefic.cloudvault.server.model.User;
 
-@ChannelHandler.Sharable
 public class CommandHandler extends SimpleChannelInboundHandler<Command> {
 
     private static final Logger LOG = LogManager.getLogger(CommandHandler.class);
@@ -30,6 +28,7 @@ public class CommandHandler extends SimpleChannelInboundHandler<Command> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Command command) throws Exception {
+        LOG.info(command);
         User user = serverContext.getUser(command.getToken());
         if (user == null) {
             LOG.error("User not registered on the server");
@@ -55,6 +54,5 @@ public class CommandHandler extends SimpleChannelInboundHandler<Command> {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         LOG.error("Command error", cause);
-        ctx.close();
     }
 }

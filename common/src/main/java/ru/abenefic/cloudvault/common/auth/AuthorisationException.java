@@ -1,6 +1,8 @@
 package ru.abenefic.cloudvault.common.auth;
 
-public class AuthorisationException extends Exception {
+import ru.abenefic.cloudvault.common.NetworkCommand;
+
+public class AuthorisationException extends Exception implements NetworkCommand {
     public AuthorisationException(String message) {
         super(message);
     }

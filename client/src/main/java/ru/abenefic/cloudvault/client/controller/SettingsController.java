@@ -1,6 +1,7 @@
 package ru.abenefic.cloudvault.client.controller;
 
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -16,9 +17,11 @@ import ru.abenefic.cloudvault.client.support.Context;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Paths;
+import java.util.ResourceBundle;
 
-public class SettingsController {
+public class SettingsController implements Initializable {
 
     private static final Logger LOG = LogManager.getLogger(SettingsController.class);
 
@@ -40,21 +43,22 @@ public class SettingsController {
             Stage settingsDialogStage = new Stage();
 
             settingsDialogStage.setTitle("Настройки");
-            settingsDialogStage.initModality(Modality.WINDOW_MODAL);
+            settingsDialogStage.initModality(Modality.APPLICATION_MODAL);
             settingsDialogStage.setResizable(false);
             Scene scene = new Scene(settingsDialogPanel);
             settingsDialogStage.setScene(scene);
             settingsDialogStage.show();
 
             SettingsController settingsController = settingsLoader.getController();
-            settingsController.prepare().onSave(settingsDialogStage::close);
+            settingsController.onSave(settingsDialogStage::close);
 
         } catch (IOException e) {
             LOG.error(e);
         }
     }
 
-    public SettingsController prepare() {
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
         Context context = Context.current();
         fldPort.setText(String.valueOf(context.getServerPort()));
         fldHost.setText(context.getServerHost());
@@ -65,7 +69,6 @@ public class SettingsController {
         });
         fldDirectory.setText(context.getUserHome().toString());
         cbAutoUpload.setSelected(context.isAutoUpload());
-        return this;
     }
 
     public void onSave(SettingsSaveListener listener) {
@@ -91,4 +94,6 @@ public class SettingsController {
             fldDirectory.setText(selectedDirectory.getAbsolutePath());
         }
     }
+
+
 }

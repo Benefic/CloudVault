@@ -1,7 +1,6 @@
 package ru.abenefic.cloudvault.client.controller;
 
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -11,6 +10,9 @@ import org.apache.logging.log4j.Logger;
 import ru.abenefic.cloudvault.client.Launcher;
 import ru.abenefic.cloudvault.client.network.Connection;
 import ru.abenefic.cloudvault.client.support.Context;
+import ru.abenefic.cloudvault.common.NetworkCommand;
+import ru.abenefic.cloudvault.common.auth.Authentication;
+import ru.abenefic.cloudvault.common.auth.AuthorisationException;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
@@ -45,6 +47,7 @@ public class AuthDialogController {
         Context context = Context.current();
         fldLogin.setText(context.getLogin());
         cbSavePassword.setSelected(context.isSavePassword());
+        Connection.getInstance().onCommand(this::onCommand);
         if (context.isSavePassword() && !context.getPassword().isBlank() && !context.getLogin().isBlank()) {
             try {
                 loginOnServer();
@@ -52,33 +55,43 @@ public class AuthDialogController {
                 LOG.error("Login failed", e);
             }
         }
-
     }
 
-    public void openSettings(ActionEvent event) {
+    public void openSettings() {
         SettingsController.openSettings();
     }
 
-    public void login(ActionEvent event) throws NoSuchAlgorithmException {
+    public void login() throws NoSuchAlgorithmException {
         prepareContext();
-        loginOnServer();
-    }
-
-    private void loginOnServer() {
         try {
-            new Connection().login(this);
+            loginOnServer();
         } catch (InterruptedException e) {
-            LOG.error("register", e);
+            LOG.error(e);
+            fireError("Connection error!");
         }
     }
 
-    public void register(ActionEvent event) throws NoSuchAlgorithmException {
-        prepareContext();
-        try {
-            new Connection().register(this);
-        } catch (InterruptedException e) {
-            LOG.error("register", e);
+    private void loginOnServer() throws InterruptedException {
+        Connection.getInstance().login();
+    }
+
+
+    private void onCommand(NetworkCommand command) {
+        if (command instanceof Authentication) {
+            Authentication auth = (Authentication) command;
+            if (!auth.getToken().isBlank()) {
+                Context.current().setToken(auth.getToken());
+                loginSuccess();
+            }
+        } else if (command instanceof AuthorisationException) {
+            AuthorisationException auth = (AuthorisationException) command;
+            fireError(auth.getMessage());
         }
+    }
+
+    public void register() throws NoSuchAlgorithmException {
+        prepareContext();
+        Connection.getInstance().register();
     }
 
     private void prepareContext() throws NoSuchAlgorithmException {

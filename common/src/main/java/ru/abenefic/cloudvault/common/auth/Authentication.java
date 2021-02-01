@@ -4,13 +4,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-
-import java.io.Serializable;
+import ru.abenefic.cloudvault.common.NetworkCommand;
 
 @Data
 @NoArgsConstructor
 @RequiredArgsConstructor
-public class Authentication implements Serializable {
+public class Authentication implements NetworkCommand {
     @NonNull
     private String login;
     @NonNull

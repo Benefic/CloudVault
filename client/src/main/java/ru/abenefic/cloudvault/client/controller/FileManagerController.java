@@ -4,7 +4,7 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
-import javafx.event.ActionEvent;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -16,14 +16,17 @@ import org.apache.logging.log4j.Logger;
 import ru.abenefic.cloudvault.client.network.Connection;
 import ru.abenefic.cloudvault.common.Command;
 import ru.abenefic.cloudvault.common.CommandType;
+import ru.abenefic.cloudvault.common.NetworkCommand;
 import ru.abenefic.cloudvault.common.commands.DirectoryTree;
 import ru.abenefic.cloudvault.common.commands.FileItem;
 import ru.abenefic.cloudvault.common.commands.FileTreeItem;
 import ru.abenefic.cloudvault.common.commands.FilesList;
 
+import java.net.URL;
 import java.util.Date;
+import java.util.ResourceBundle;
 
-public class FileManagerController {
+public class FileManagerController implements Initializable {
     private static final Logger LOG = LogManager.getLogger(FileManagerController.class);
 
     private final Image folderIcon = new Image(getClass().getResourceAsStream("folder.png"));
@@ -35,14 +38,16 @@ public class FileManagerController {
     public TreeView<FileTreeItem> treeView;
     public Button btnExit;
 
-    public FileManagerController prepare() {
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        Connection.getInstance()
+                .onCommand(this::onCommandSuccess);
         drawButtons();
         rootNode.setExpanded(true);
         updateTree();
-        treeView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldItem, newItem) -> {
-            new Connection().getFilesList(this, newItem.getValue().getPath());
-        });
-        return this;
+        treeView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldItem, newItem)
+                -> Connection.getInstance().getFilesList(newItem.getValue().getPath()));
     }
 
     public void setLogoutListener(LogoutListener listener) {
@@ -56,7 +61,7 @@ public class FileManagerController {
 
     private void updateTree() {
         try {
-            new Connection().getDirectoryTree(this);
+            Connection.getInstance().getDirectoryTree();
         } catch (InterruptedException e) {
             LOG.error("Get tree", e);
         }
@@ -78,9 +83,12 @@ public class FileManagerController {
                     sb.deleteCharAt(sb.lastIndexOf("\\"));
                     parentName = sb.toString();
                     TreeItem<FileTreeItem> parent = findItemByPath(rootNode, parentName);
-                    ObservableList<TreeItem<FileTreeItem>> children = parent.getChildren();
-                    if (children != null) {
-                        children.add(new TreeItem<>(fileTreeItem, new ImageView(folderIcon)));
+                    ObservableList<TreeItem<FileTreeItem>> children;
+                    if (parent != null) {
+                        children = parent.getChildren();
+                        if (children != null) {
+                            children.add(new TreeItem<>(fileTreeItem, new ImageView(folderIcon)));
+                        }
                     }
                 }
             }
@@ -105,10 +113,7 @@ public class FileManagerController {
     }
 
     private void updateFileTable(FilesList filesList) {
-        Platform.runLater(() -> {
-                    updateTableView(filesList);
-                }
-        );
+        Platform.runLater(() -> updateTableView(filesList));
     }
 
     private void updateTableView(FilesList filesList) {
@@ -125,7 +130,6 @@ public class FileManagerController {
         TableColumn<FileItem, Date> columnDate = new TableColumn<>("Дата");
         columnDate.setCellValueFactory(new PropertyValueFactory<>("date"));
 
-
         tableView.getColumns().setAll(columnFileName, columnExtension, columnDate);
 
         if (filesList != null) {
@@ -140,7 +144,8 @@ public class FileManagerController {
 
     }
 
-    public void onCommandSuccess(Command command) {
+    public void onCommandSuccess(NetworkCommand networkCommand) {
+        Command command = (Command) networkCommand;
         if (command.getType() == CommandType.GET_TREE) {
             updateTreeView((DirectoryTree) command.getData());
         } else if (command.getType() == CommandType.GET_FILES) {
@@ -149,11 +154,13 @@ public class FileManagerController {
     }
 
 
-    public void openSettings(ActionEvent actionEvent) {
+    public void openSettings() {
         SettingsController.openSettings();
     }
 
-    public void exit(ActionEvent actionEvent) {
+    public void exit() {
         logoutListener.logout();
     }
+
+
 }
