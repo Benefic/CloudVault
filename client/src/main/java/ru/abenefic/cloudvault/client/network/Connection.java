@@ -62,6 +62,7 @@ public class Connection {
         if (commandCallback == null) {
             throw new IllegalStateException("CommandCallback is null!");
         }
+
         String host = Context.current().getServerHost();
         int port = Context.current().getServerPort();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -124,7 +125,15 @@ public class Connection {
         context.close();
     }
 
+    public void getFile(String path) {
+        Command command = Command.getFileCommand(new StringData(path));
+        command.setToken(Context.current().getToken());
+        context.writeAndFlush(command);
+    }
+
     public void uploadFile(String path) {
         LOG.info("Uploading " + path);
     }
+
+
 }

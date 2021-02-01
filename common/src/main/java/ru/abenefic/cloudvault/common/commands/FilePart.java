@@ -4,18 +4,24 @@
 
 package ru.abenefic.cloudvault.common.commands;
 
+import java.util.Arrays;
+
 public class FilePart implements CommandData {
 
-    public static final int partSize = 1_048_576;
+    public static final int partSize = 1_048_576 / 2;
 
     private final String fileName;
     private final byte[] data;
-    private final int dataLength;
+    private final boolean isEnd;
 
-    public FilePart(String fileName, byte[] data, int dataLength) {
+    public FilePart(String fileName, byte[] data, int dataLength, boolean isEnd) {
         this.fileName = fileName;
-        this.data = data;
-        this.dataLength = dataLength;
+        if (dataLength > 0 && data.length > dataLength) {
+            this.data = Arrays.copyOf(data, dataLength);
+        } else {
+            this.data = data;
+        }
+        this.isEnd = isEnd;
     }
 
     public String getFileName() {
@@ -26,6 +32,10 @@ public class FilePart implements CommandData {
         return data;
     }
 
+    public boolean isEnd() {
+        return isEnd;
+    }
+
     @Override
     public String toString() {
         return "FilePart{" +
@@ -34,8 +44,4 @@ public class FilePart implements CommandData {
                 '}';
     }
 
-
-    public int getDataLength() {
-        return dataLength;
-    }
 }

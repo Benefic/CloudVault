@@ -2,7 +2,7 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.*?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="600.0" prefWidth="800.0"
             xmlns="http://javafx.com/javafx/11.0.1"
             fx:controller="ru.abenefic.cloudvault.client.controller.FileManagerController">
@@ -13,11 +13,28 @@
                       AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
         </AnchorPane>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-            <ToolBar layoutX="14.0" layoutY="14.0" prefHeight="50.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0"
-                     AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                <items>
-                    <Button mnemonicParsing="false" text="Button"/>
-                </items>
+            <ToolBar fx:id="tbFileButtons" layoutX="14.0" layoutY="14.0" prefHeight="50.0" prefWidth="200.0"
+                     AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <Button fx:id="btnUpload" mnemonicParsing="false" onAction="#upload" text="Загрузить">
+                    <font>
+                        <Font size="14.0"/>
+                    </font>
+                </Button>
+                <Button fx:id="btnDownload" disable="true" mnemonicParsing="false" onAction="#download" text="Скачать">
+                    <font>
+                        <Font size="14.0"/>
+                    </font>
+                </Button>
+                <Button fx:id="btnOpenFile" mnemonicParsing="false" onAction="#openFile" text="Открыть">
+                    <font>
+                        <Font size="14.0"/>
+                    </font>
+                </Button>
+                <Button fx:id="btnOpenFolder" mnemonicParsing="false" onAction="#openFolder" text="Открыть папку">
+                    <font>
+                        <Font size="14.0"/>
+                    </font>
+                </Button>
             </ToolBar>
             <ToolBar nodeOrientation="RIGHT_TO_LEFT" prefHeight="50.0" prefWidth="150.0" AnchorPane.rightAnchor="0.0"
                      AnchorPane.topAnchor="0.0">

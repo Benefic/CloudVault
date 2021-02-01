@@ -24,11 +24,7 @@ public class Launcher extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        Thread connection = new Thread(this::connect);
-        connection.setDaemon(true);
-        connection.start();
         primaryStage.setOnCloseRequest(value -> Connection.getInstance().shutdown());
-
 
         FXMLLoader authLoader = new FXMLLoader();
 

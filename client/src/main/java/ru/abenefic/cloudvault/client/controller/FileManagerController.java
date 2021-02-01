@@ -14,15 +14,16 @@ import javafx.scene.layout.VBox;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.abenefic.cloudvault.client.network.Connection;
+import ru.abenefic.cloudvault.client.support.Context;
 import ru.abenefic.cloudvault.common.Command;
-import ru.abenefic.cloudvault.common.CommandType;
 import ru.abenefic.cloudvault.common.NetworkCommand;
-import ru.abenefic.cloudvault.common.commands.DirectoryTree;
-import ru.abenefic.cloudvault.common.commands.FileItem;
-import ru.abenefic.cloudvault.common.commands.FileTreeItem;
-import ru.abenefic.cloudvault.common.commands.FilesList;
+import ru.abenefic.cloudvault.common.commands.*;
 
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.Date;
 import java.util.ResourceBundle;
 
@@ -32,11 +33,20 @@ public class FileManagerController implements Initializable {
     private final Image folderIcon = new Image(getClass().getResourceAsStream("folder.png"));
     private final Node rootIcon = new ImageView(folderIcon);
     private final TreeItem<FileTreeItem> rootNode = new TreeItem<>(new FileTreeItem("Сервер", "root"), rootIcon);
-    private LogoutListener logoutListener;
+
+    public Button btnUpload;
+    public Button btnDownload;
+    public Button btnOpenFile;
+    public Button btnOpenFolder;
     public Button btnSettings;
     public VBox tableBox;
     public TreeView<FileTreeItem> treeView;
     public Button btnExit;
+    public ToolBar tbFileButtons;
+
+    private String currentFolder;
+    private String currentFile;
+    private LogoutListener logoutListener;
 
 
     @Override
@@ -47,7 +57,12 @@ public class FileManagerController implements Initializable {
         rootNode.setExpanded(true);
         updateTree();
         treeView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldItem, newItem)
-                -> Connection.getInstance().getFilesList(newItem.getValue().getPath()));
+                -> {
+            currentFolder = newItem.getValue().getPath();
+            currentFile = null;
+            btnDownload.setDisable(true);
+            Connection.getInstance().getFilesList(currentFolder);
+        });
     }
 
     public void setLogoutListener(LogoutListener listener) {
@@ -113,6 +128,11 @@ public class FileManagerController implements Initializable {
     }
 
     private void updateFileTable(FilesList filesList) {
+        Path userHome = Context.current().getUserHome();
+
+        for (FileItem fileItem : filesList.getList()) {
+            fileItem.setExist(Files.exists(userHome.resolve(currentFolder).resolve(fileItem.getName())));
+        }
         Platform.runLater(() -> updateTableView(filesList));
     }
 
@@ -130,7 +150,10 @@ public class FileManagerController implements Initializable {
         TableColumn<FileItem, Date> columnDate = new TableColumn<>("Дата");
         columnDate.setCellValueFactory(new PropertyValueFactory<>("date"));
 
-        tableView.getColumns().setAll(columnFileName, columnExtension, columnDate);
+        TableColumn<FileItem, Boolean> columnExist = new TableColumn<>("Скачан");
+        columnExist.setCellValueFactory(new PropertyValueFactory<>("exist"));
+
+        tableView.getColumns().setAll(columnFileName, columnExtension, columnDate, columnExist);
 
         if (filesList != null) {
             SortedList<FileItem> sortedList = new SortedList<>(
@@ -140,16 +163,41 @@ public class FileManagerController implements Initializable {
             tableView.setItems(sortedList);
         }
 
+        tableView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
+            if (newValue.isFolder()) {
+                currentFile = null;
+                btnDownload.setDisable(true);
+            } else {
+                currentFile = newValue.getName();
+                btnDownload.setDisable(false);
+            }
+        });
+
         tableBox.getChildren().add(tableView);
 
     }
 
     public void onCommandSuccess(NetworkCommand networkCommand) {
         Command command = (Command) networkCommand;
-        if (command.getType() == CommandType.GET_TREE) {
-            updateTreeView((DirectoryTree) command.getData());
-        } else if (command.getType() == CommandType.GET_FILES) {
-            updateFileTable((FilesList) command.getData());
+        switch (command.getType()) {
+            case GET_FILES -> updateFileTable((FilesList) command.getData());
+            case GET_TREE -> updateTreeView((DirectoryTree) command.getData());
+            case FILE_TRANSFER -> writeFilePart((FilePart) command.getData());
+        }
+
+    }
+
+    private void writeFilePart(FilePart data) {
+
+        if (data.isEnd()) {
+            Platform.runLater(() -> tbFileButtons.setDisable(false));
+        } else {
+            Path filePath = Context.current().getUserHome().resolve(currentFolder).resolve(data.getFileName());
+            try {
+                Files.write(filePath, data.getData(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+            } catch (IOException e) {
+                LOG.error(e);
+            }
         }
     }
 
@@ -163,4 +211,24 @@ public class FileManagerController implements Initializable {
     }
 
 
+    public void upload() {
+
+    }
+
+    public void download() throws IOException {
+        tbFileButtons.setDisable(true);
+        Path path = Path.of(String.valueOf(Context.current().getUserHome()), currentFolder);
+        if (Files.notExists(path)) {
+            Files.createDirectories(path);
+        }
+        Connection.getInstance().getFile(Path.of(currentFolder, currentFile).toString());
+    }
+
+    public void openFile() {
+
+    }
+
+    public void openFolder() {
+
+    }
 }

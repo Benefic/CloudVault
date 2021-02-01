@@ -47,7 +47,22 @@ public class AuthDialogController {
         Context context = Context.current();
         fldLogin.setText(context.getLogin());
         cbSavePassword.setSelected(context.isSavePassword());
-        Connection.getInstance().onCommand(this::onCommand);
+
+        Thread connection = new Thread(this::connect);
+        connection.setDaemon(true);
+        connection.start();
+
+    }
+
+    private void connect() {
+        Connection.getInstance()
+                .onCommand(this::onCommand)
+                .onConnected(this::onConnected)
+                .connect();
+    }
+
+    private void onConnected() {
+        Context context = Context.current();
         if (context.isSavePassword() && !context.getPassword().isBlank() && !context.getLogin().isBlank()) {
             try {
                 loginOnServer();

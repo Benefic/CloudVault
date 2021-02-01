@@ -27,10 +27,18 @@ public class Command implements NetworkCommand {
         return command;
     }
 
-    public static Command filePartTransferCommand(String fileName, byte[] fileData, int dataLength) {
+    public static Command getFileCommand(CommandData commandData) {
+        Command command = new Command();
+        command.type = CommandType.GET_FILE;
+        command.data = commandData;
+        return command;
+    }
+
+
+    public static Command filePartTransferCommand(String fileName, byte[] fileData, int dataLength, boolean isEnd) {
         Command command = new Command();
         command.type = CommandType.FILE_TRANSFER;
-        command.data = new FilePart(fileName, fileData, dataLength);
+        command.data = new FilePart(fileName, fileData, dataLength, isEnd);
         return command;
     }
 

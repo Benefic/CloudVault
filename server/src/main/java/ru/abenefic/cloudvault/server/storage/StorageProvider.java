@@ -15,15 +15,7 @@ import java.util.Set;
 public class StorageProvider {
     static DirectoryTree getUserTree(User user) throws Exception {
         DirectoryTree tree = new DirectoryTree();
-        Path rootPath = Path.of(Configuration.getInstance().getSrvRootDirectory());
-        if (Files.notExists(rootPath)) {
-            Files.createDirectory(rootPath);
-        }
-
-        Path userRoot = Path.of(String.valueOf(rootPath), String.valueOf(user.getId()));
-        if (Files.notExists(userRoot)) {
-            Files.createDirectory(userRoot);
-        }
+        Path userRoot = getUserRoot(user);
         Files.walkFileTree(userRoot,
                 new SimpleFileVisitor<>() {
 
@@ -39,6 +31,19 @@ public class StorageProvider {
                 }
         );
         return tree;
+    }
+
+    private static Path getUserRoot(User user) throws IOException {
+        Path rootPath = Path.of(Configuration.getInstance().getSrvRootDirectory());
+        if (Files.notExists(rootPath)) {
+            Files.createDirectory(rootPath);
+        }
+
+        Path userRoot = Path.of(String.valueOf(rootPath), String.valueOf(user.getId()));
+        if (Files.notExists(userRoot)) {
+            Files.createDirectory(userRoot);
+        }
+        return userRoot;
     }
 
     static FilesList getFilesList(User user, String parentPath) throws IOException {
@@ -67,4 +72,10 @@ public class StorageProvider {
         //TODO
         return true;
     }
+
+    static Path getFilePath(User user, String filePath) throws IOException {
+        Path userRoot = getUserRoot(user);
+        return userRoot.resolve(filePath);
+    }
+
 }

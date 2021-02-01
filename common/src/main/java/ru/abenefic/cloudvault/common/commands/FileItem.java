@@ -9,12 +9,13 @@ import java.nio.file.attribute.FileTime;
 import java.util.Date;
 
 @Data
-public class FileItem implements Serializable, Comparable {
+public class FileItem implements Serializable, Comparable<FileItem> {
     private boolean isFolder;
     private String name;
     private long createAt;
     private String extension;
     private Date date;
+    private boolean exist;
 
     public static FileItem fromPath(Path path, FileTime createAt) {
         FileItem fileItem = new FileItem();
@@ -31,7 +32,7 @@ public class FileItem implements Serializable, Comparable {
     }
 
     @Override
-    public int compareTo(Object o) {
-        return name.compareTo(((FileItem) o).getName());
+    public int compareTo(FileItem o) {
+        return name.compareTo(o.getName());
     }
 }
