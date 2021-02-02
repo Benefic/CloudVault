@@ -6,11 +6,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.abenefic.cloudvault.common.NetworkCommand;
 
+/**
+ * Главнй по командам
+ */
 public class CommandHandler extends ChannelInboundHandlerAdapter {
 
     private static final Logger LOG = LogManager.getLogger(CommandHandler.class);
-    private final CommandCallback controller;
-    private final OnConnectedCallback connectedCallback;
+    private final CommandCallback controller;  // здесь слушаем ответ сервера
+    private final OnConnectedCallback connectedCallback; // здесь говорим об успешном подключении
 
     public CommandHandler(CommandCallback controller, OnConnectedCallback connectedCallback) {
         this.controller = controller;

@@ -17,14 +17,17 @@ import ru.abenefic.cloudvault.common.Command;
 import ru.abenefic.cloudvault.common.auth.Authentication;
 import ru.abenefic.cloudvault.common.commands.StringData;
 
+/**
+ * Синглтон для всей работы с сетью
+ */
 public class Connection {
 
     private static final Logger LOG = LogManager.getLogger(Connection.class);
 
     private static Connection instance;
 
-    private CommandCallback commandCallback;
-    private OnConnectedCallback onConnectedCallback;
+    private CommandCallback commandCallback; // здесь слушаем ответы сервера
+    private OnConnectedCallback onConnectedCallback; // здесь говорим об успешном соединении
     private SocketChannel context;
 
     private Connection() {
@@ -40,6 +43,8 @@ public class Connection {
     public Connection onConnected(OnConnectedCallback onConnectedCallback) {
         this.onConnectedCallback = onConnectedCallback;
         if (context != null) {
+            // когда соединение установлено, менем pipeline - другой объект может захотеть слушать сервер
+            // после авторизации переключаем слушателя из основного окна
             context.pipeline().removeLast();
             context.pipeline().addLast(new CommandHandler(commandCallback, onConnectedCallback));
         }
@@ -49,6 +54,7 @@ public class Connection {
     public Connection onCommand(CommandCallback commandCallback) {
         this.commandCallback = commandCallback;
         if (context != null) {
+            // см. выше
             context.pipeline().removeLast();
             context.pipeline().addLast(new CommandHandler(commandCallback, onConnectedCallback));
         }
@@ -56,6 +62,7 @@ public class Connection {
     }
 
     public void connect() {
+
         if (onConnectedCallback == null) {
             throw new IllegalStateException("OnConnectedCallback is null!");
         }
@@ -110,16 +117,21 @@ public class Connection {
 
     public void getDirectoryTree() throws InterruptedException {
         Command command = Command.getTreeCommand();
-        command.setToken(Context.current().getToken());
+        writeToken(command);
         context.writeAndFlush(command);
+    }
+
+    private void writeToken(Command command) {
+        command.setToken(Context.current().getToken());
     }
 
     public void getFilesList(String path) {
         Command command = Command.getFilesCommand(new StringData(path));
-        command.setToken(Context.current().getToken());
+        writeToken(command);
         context.writeAndFlush(command);
     }
 
+    // команда для остановки потока с соединением при закрытии окон GUI
     public void shutdown() {
         LOG.info("shutdown");
         context.close();
@@ -127,7 +139,7 @@ public class Connection {
 
     public void getFile(String path) {
         Command command = Command.getFileCommand(new StringData(path));
-        command.setToken(Context.current().getToken());
+        writeToken(command);
         context.writeAndFlush(command);
     }
 

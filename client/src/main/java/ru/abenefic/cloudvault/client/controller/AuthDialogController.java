@@ -20,6 +20,9 @@ import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+/**
+ * Экран входа
+ */
 public class AuthDialogController {
 
     private static final Logger LOG = LogManager.getLogger(AuthDialogController.class);
@@ -35,6 +38,7 @@ public class AuthDialogController {
     public PasswordField fldPassword;
     public Hyperlink hlRegister;
 
+
     public void prepare(Launcher launcher) {
         this.launcher = launcher;
         try (InputStream input = getClass().getResourceAsStream("security-vault.jpg")) {
@@ -48,6 +52,7 @@ public class AuthDialogController {
         fldLogin.setText(context.getLogin());
         cbSavePassword.setSelected(context.isSavePassword());
 
+        // создаём подключение - слушаем команды здесь для регистрации и авторизации
         Thread connection = new Thread(this::connect);
         connection.setDaemon(true);
         connection.start();
@@ -64,6 +69,7 @@ public class AuthDialogController {
     private void onConnected() {
         Context context = Context.current();
         if (context.isSavePassword() && !context.getPassword().isBlank() && !context.getLogin().isBlank()) {
+            // если пользователь сохранил параметры входа - пробуем войти и открыть хранилище
             try {
                 loginOnServer();
             } catch (Exception e) {
@@ -95,10 +101,12 @@ public class AuthDialogController {
         if (command instanceof Authentication) {
             Authentication auth = (Authentication) command;
             if (!auth.getToken().isBlank()) {
+                // нет токена - нет входа.
                 Context.current().setToken(auth.getToken());
                 loginSuccess();
             }
         } else if (command instanceof AuthorisationException) {
+            // что-то пошло не так, сообщаем пользователю
             AuthorisationException auth = (AuthorisationException) command;
             fireError(auth.getMessage());
         }
@@ -110,6 +118,7 @@ public class AuthDialogController {
     }
 
     private void prepareContext() throws NoSuchAlgorithmException {
+        // сохраняем значения полей в служебном объекте-синглтоне контекста
         Context context = Context.current();
         context.setLogin(fldLogin.getText());
         String password = fldPassword.getText();
@@ -136,6 +145,7 @@ public class AuthDialogController {
 
     public void loginSuccess() {
         Platform.runLater(() -> {
+            // перед открытием очищаем поле пароля, чтобы при выходе требовать его для повторного входа
             fldPassword.setText("");
             launcher.openVault();
         });

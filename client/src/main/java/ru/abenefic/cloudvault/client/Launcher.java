@@ -76,6 +76,7 @@ public class Launcher extends Application {
 
             FileManagerController fileManagerController = mainViewLoader.getController();
             fileManagerController.setLogoutListener(() -> {
+                // пользователь нажал выход в основном окне
                 mainViewDialogStage.setOnCloseRequest(null);
                 mainViewDialogStage.close();
                 authDialogStage.show();

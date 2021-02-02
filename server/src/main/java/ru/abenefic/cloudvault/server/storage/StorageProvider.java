@@ -12,6 +12,10 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Set;
 
+/**
+ * Утилитный класс для работы с файлами пользователя
+ */
+
 public class StorageProvider {
     static DirectoryTree getUserTree(User user) throws Exception {
         DirectoryTree tree = new DirectoryTree();

@@ -27,6 +27,10 @@ import java.nio.file.StandardOpenOption;
 import java.util.Date;
 import java.util.ResourceBundle;
 
+
+/**
+ * Главный экран
+ */
 public class FileManagerController implements Initializable {
     private static final Logger LOG = LogManager.getLogger(FileManagerController.class);
 
@@ -44,13 +48,14 @@ public class FileManagerController implements Initializable {
     public Button btnExit;
     public ToolBar tbFileButtons;
 
-    private String currentFolder;
+    private String currentFolder = "./";
     private String currentFile;
     private LogoutListener logoutListener;
 
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        // переопределяем pipeline - команды слушаем теперь тут
         Connection.getInstance()
                 .onCommand(this::onCommandSuccess);
         drawButtons();
@@ -66,6 +71,7 @@ public class FileManagerController implements Initializable {
     }
 
     public void setLogoutListener(LogoutListener listener) {
+        // для открытия обратно окна авторизации при выходе пользователя
         this.logoutListener = listener;
     }
 
@@ -110,10 +116,12 @@ public class FileManagerController implements Initializable {
             treeView.setRoot(rootNode);
             treeView.setShowRoot(true);
             treeView.setEditable(false);
-
+            // в корне могут быть не только папки, но и каталоги
+            Connection.getInstance().getFilesList(currentFolder);
         });
     }
 
+    // поиск родителя для рекурсивной отрисовки дерева
     private TreeItem<FileTreeItem> findItemByPath(TreeItem<FileTreeItem> root, String parentName) {
         if (root.getValue().getPath().equals(parentName)) {
             return root;
@@ -127,6 +135,7 @@ public class FileManagerController implements Initializable {
         return null;
     }
 
+    // обновляем таблицу файлов при выборе папки в дереве из результатов запроса к серверу
     private void updateFileTable(FilesList filesList) {
         Path userHome = Context.current().getUserHome();
 
@@ -177,6 +186,7 @@ public class FileManagerController implements Initializable {
 
     }
 
+    // обрабатываем результаты запросов здесь
     public void onCommandSuccess(NetworkCommand networkCommand) {
         Command command = (Command) networkCommand;
         switch (command.getType()) {
@@ -190,6 +200,7 @@ public class FileManagerController implements Initializable {
     private void writeFilePart(FilePart data) {
 
         if (data.isEnd()) {
+            // это просто маркер что весь файл передан. включаем кнопку обратно
             Platform.runLater(() -> tbFileButtons.setDisable(false));
         } else {
             Path filePath = Context.current().getUserHome().resolve(currentFolder).resolve(data.getFileName());
@@ -210,12 +221,12 @@ public class FileManagerController implements Initializable {
         logoutListener.logout();
     }
 
-
     public void upload() {
 
     }
 
     public void download() throws IOException {
+        // выключаем кнопку скачивания, пока процесс однопоточный...
         tbFileButtons.setDisable(true);
         Path path = Path.of(String.valueOf(Context.current().getUserHome()), currentFolder);
         if (Files.notExists(path)) {

@@ -6,9 +6,13 @@ package ru.abenefic.cloudvault.common.commands;
 
 import java.util.Arrays;
 
+/**
+ * Транспорт кусков разбитого файла
+ */
+
 public class FilePart implements CommandData {
 
-    public static final int partSize = 1_048_576 / 2;
+    public static final int partSize = 20480;
 
     private final String fileName;
     private final byte[] data;
@@ -17,7 +21,11 @@ public class FilePart implements CommandData {
     public FilePart(String fileName, byte[] data, int dataLength, boolean isEnd) {
         this.fileName = fileName;
         if (dataLength > 0 && data.length > dataLength) {
+            // это "хвост файла", обрезаем массив, тащить весь ни к чему
             this.data = Arrays.copyOf(data, dataLength);
+        } else if (dataLength == -1) {
+            // заглушка для
+            this.data = new byte[0];
         } else {
             this.data = data;
         }

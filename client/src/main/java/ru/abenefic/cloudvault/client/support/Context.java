@@ -13,6 +13,10 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Properties;
 
+/**
+ * Главный по параметрам пользователя
+ */
+
 @Data
 public class Context {
 
@@ -96,6 +100,7 @@ public class Context {
         }
     }
 
+    // сохранем конфиг пользователя
     public void saveSettings() {
         Properties property = new Properties();
         property.setProperty("serverPort", String.valueOf(serverPort));

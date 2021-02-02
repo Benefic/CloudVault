@@ -8,6 +8,10 @@ package ru.abenefic.cloudvault.common;
 import ru.abenefic.cloudvault.common.commands.CommandData;
 import ru.abenefic.cloudvault.common.commands.FilePart;
 
+/**
+ * Основной класс транспорта - он передаётся и ловится Хэндлерами на обеих сторонах
+ * По совместительству "фабрика" команд
+ */
 public class Command implements NetworkCommand {
 
     private CommandType type;

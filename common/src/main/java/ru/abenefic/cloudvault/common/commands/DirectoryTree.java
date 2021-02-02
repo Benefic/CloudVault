@@ -5,6 +5,10 @@ import lombok.Data;
 
 import java.util.ArrayList;
 
+/**
+ * Класс-контейнер для иерархии папок пользователя на сервере
+ */
+
 @Data
 public class DirectoryTree implements CommandData {
 

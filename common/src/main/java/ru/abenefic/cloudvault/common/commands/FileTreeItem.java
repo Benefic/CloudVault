@@ -6,6 +6,10 @@ import lombok.NonNull;
 
 import java.io.Serializable;
 
+/**
+ * Класс - представление папки пользователя - для сети и View на клиенте
+ */
+
 @Data
 @AllArgsConstructor
 public class FileTreeItem implements Serializable {

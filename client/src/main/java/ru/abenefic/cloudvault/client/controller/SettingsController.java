@@ -21,6 +21,10 @@ import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ResourceBundle;
 
+
+/**
+ * окно настроек
+ */
 public class SettingsController implements Initializable {
 
     private static final Logger LOG = LogManager.getLogger(SettingsController.class);
@@ -59,6 +63,7 @@ public class SettingsController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        // читаем из контекста в поля ввода
         Context context = Context.current();
         fldPort.setText(String.valueOf(context.getServerPort()));
         fldHost.setText(context.getServerHost());
@@ -76,6 +81,7 @@ public class SettingsController implements Initializable {
     }
 
     public void save() {
+        // сохраняем значения в контексте и сразу записываем в файл
         Context context = Context.current();
         context.setServerHost(fldHost.getText());
         context.setServerPort(Integer.parseInt(fldPort.getText()));
