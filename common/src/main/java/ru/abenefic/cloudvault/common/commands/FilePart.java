@@ -17,9 +17,11 @@ public class FilePart implements CommandData {
     private final String fileName;
     private final byte[] data;
     private final boolean isEnd;
+    private final double progress;
 
-    public FilePart(String fileName, byte[] data, int dataLength, boolean isEnd) {
+    public FilePart(String fileName, byte[] data, int dataLength, boolean isEnd, double progress) {
         this.fileName = fileName;
+        this.progress = progress;
         if (dataLength > 0 && data.length > dataLength) {
             // это "хвост файла", обрезаем массив, тащить весь ни к чему
             this.data = Arrays.copyOf(data, dataLength);
@@ -52,4 +54,7 @@ public class FilePart implements CommandData {
                 '}';
     }
 
+    public double getProgress() {
+        return progress;
+    }
 }

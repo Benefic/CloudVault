@@ -1,14 +1,13 @@
 package ru.abenefic.cloudvault.server.storage;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import ru.abenefic.cloudvault.common.commands.*;
 import ru.abenefic.cloudvault.server.model.User;
 import ru.abenefic.cloudvault.server.support.Configuration;
 
 import java.io.IOException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Set;
 
@@ -17,6 +16,10 @@ import java.util.Set;
  */
 
 public class StorageProvider {
+
+    private static final Logger LOG = LogManager.getLogger(StorageProvider.class);
+
+
     static DirectoryTree getUserTree(User user) throws Exception {
         DirectoryTree tree = new DirectoryTree();
         Path userRoot = getUserRoot(user);
@@ -73,8 +76,17 @@ public class StorageProvider {
     }
 
     static boolean writeFilePart(User user, FilePart filePart) {
-        //TODO
-        return true;
+
+        try {
+            Path filePath = getUserRoot(user).resolve(filePart.getFileName());
+            Files.createDirectories(filePath.getParent()); // если такой папки ещё нет, чтобы ошибки не было
+            Files.write(filePath, filePart.getData(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+            return true;
+        } catch (IOException e) {
+            LOG.error(e);
+            return false;
+        }
+
     }
 
     static Path getFilePath(User user, String filePath) throws IOException {

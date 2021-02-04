@@ -5,8 +5,7 @@
 package ru.abenefic.cloudvault.common;
 
 
-import ru.abenefic.cloudvault.common.commands.CommandData;
-import ru.abenefic.cloudvault.common.commands.FilePart;
+import ru.abenefic.cloudvault.common.commands.*;
 
 /**
  * Основной класс транспорта - он передаётся и ловится Хэндлерами на обеих сторонах
@@ -39,18 +38,34 @@ public class Command implements NetworkCommand {
     }
 
 
-    public static Command filePartTransferCommand(String fileName, byte[] fileData, int dataLength, boolean isEnd) {
+    public static Command filePartTransferCommand(String fileName, byte[] fileData, int dataLength, boolean isEnd, double progress) {
         Command command = new Command();
         command.type = CommandType.FILE_TRANSFER;
-        command.data = new FilePart(fileName, fileData, dataLength, isEnd);
+        command.data = new FilePart(fileName, fileData, dataLength, isEnd, progress);
         return command;
     }
 
-    public static Command exitCommand() {
+    public static Command fileTransferResult(boolean result) {
         Command command = new Command();
-        command.type = CommandType.EXIT;
+        command.type = CommandType.FILE_TRANSFER_RESULT;
+        command.data = new FileTransferResult(result);
         return command;
     }
+
+    public static Command fileRemoveCommand(String fileName) {
+        Command command = new Command();
+        command.type = CommandType.REMOVE_FILE;
+        command.data = new StringData(fileName);
+        return command;
+    }
+
+    public static Command fileRenameCommand(String fileName, String newName) {
+        Command command = new Command();
+        command.type = CommandType.RENAME_FILE;
+        command.data = new RenameData(fileName, newName);
+        return command;
+    }
+
 
     public CommandType getType() {
         return type;

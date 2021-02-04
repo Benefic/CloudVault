@@ -11,6 +11,9 @@ public enum CommandType {
     GET_TREE,
     GET_FILES,
     FILE_TRANSFER,
+    FILE_TRANSFER_RESULT,
+    REMOVE_FILE,
+    RENAME_FILE,
     EXIT,
     GET_FILE
 }

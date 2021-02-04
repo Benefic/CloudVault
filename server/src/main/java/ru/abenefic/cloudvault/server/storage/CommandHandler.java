@@ -7,10 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.abenefic.cloudvault.common.Command;
 import ru.abenefic.cloudvault.common.auth.AuthorisationException;
-import ru.abenefic.cloudvault.common.commands.DirectoryTree;
-import ru.abenefic.cloudvault.common.commands.FilePart;
-import ru.abenefic.cloudvault.common.commands.FilesList;
-import ru.abenefic.cloudvault.common.commands.StringData;
+import ru.abenefic.cloudvault.common.commands.*;
 import ru.abenefic.cloudvault.server.model.User;
 
 import java.io.FileInputStream;
@@ -65,15 +62,39 @@ public class CommandHandler extends SimpleChannelInboundHandler<Command> {
                         int read;
 
                         InputStream inputStream = new FileInputStream(filePath.toAbsolutePath().toString());
+                        float size = inputStream.available();
+                        int iterator = 1;
                         while ((read = inputStream.read(buffer)) != -1) {
-
-                            response = Command.filePartTransferCommand(fileName, buffer, read, false);
+                            float progress = ((float) (buffer.length * iterator)) / size;
+                            response = Command.filePartTransferCommand(fileName, buffer, read, false, progress);
                             ctx.writeAndFlush(response);
+                            iterator++;
                         }
-                        response = Command.filePartTransferCommand(fileName, buffer, read, true);
+                        response = Command.filePartTransferCommand(fileName, buffer, read, true, 0);
                         ctx.writeAndFlush(response);
                     }
                 }
+                case FILE_TRANSFER -> {
+                    boolean result = StorageProvider.writeFilePart(user, (FilePart) command.getData());
+                    response = Command.fileTransferResult(result);
+                    ctx.writeAndFlush(response);
+                }
+                case REMOVE_FILE -> {
+                    Path filePath = StorageProvider.getFilePath(user, ((StringData) command.getData()).getData());
+                    try {
+                        Files.delete(filePath);
+                    } catch (Exception e) {
+                        LOG.error(e);
+                    }
+                    // возвращаем команду как сигнал завершения, пусть клиент по нему обновляет таблицу у себя
+                    ctx.writeAndFlush(command);
+                }
+                case RENAME_FILE -> {
+                    RenameData data = (RenameData) command.getData();
+                    Path filePath = StorageProvider.getFilePath(user, data.getFilePath());
+                    Files.move(filePath, filePath.getParent().resolve(data.getNewName()));
+                }
+
                 default -> throw new IllegalStateException("Unexpected value: " + command.getType());
             }
         }

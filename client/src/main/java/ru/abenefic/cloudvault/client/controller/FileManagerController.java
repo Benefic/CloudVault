@@ -4,7 +4,6 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
-import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -13,6 +12,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.abenefic.cloudvault.client.network.Connection;
@@ -22,6 +22,7 @@ import ru.abenefic.cloudvault.common.NetworkCommand;
 import ru.abenefic.cloudvault.common.commands.*;
 
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -40,7 +41,7 @@ public class FileManagerController implements Initializable {
 
     private final Image folderIcon = new Image(getClass().getResourceAsStream("folder.png"));
     private final Node rootIcon = new ImageView(folderIcon);
-    private final TreeItem<FileTreeItem> rootNode = new TreeItem<>(new FileTreeItem("Сервер", "root"), rootIcon);
+    private final TreeItem<FileTreeItem> rootNode = new TreeItem<>(new FileTreeItem("Сервер", ""), rootIcon);
 
     public Button btnUpload;
     public Button btnDownload;
@@ -52,11 +53,15 @@ public class FileManagerController implements Initializable {
     public Button btnExit;
     public ToolBar tbFileButtons;
     public TableView<FileItem> tableView;
+    public ProgressBar progressBar;
 
     private String currentFolder = "./";
     private String currentFile;
     private LogoutListener logoutListener;
 
+    // для прогресса выгрузки
+    private float fileSize;
+    private int iterator;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -92,12 +97,14 @@ public class FileManagerController implements Initializable {
         tableView.getColumns().setAll(columnFileName, columnExtension, columnDate, columnExist);
 
         tableView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
-            if (newValue.isFolder()) {
-                currentFile = null;
-                btnDownload.setDisable(true);
-            } else {
-                currentFile = newValue.getName();
-                btnDownload.setDisable(false);
+            if (newValue != null) {
+                if (newValue.isFolder()) {
+                    currentFile = null;
+                    btnDownload.setDisable(true);
+                } else {
+                    currentFile = newValue.getName();
+                    btnDownload.setDisable(false);
+                }
             }
         });
     }
@@ -197,6 +204,19 @@ public class FileManagerController implements Initializable {
             case GET_FILES -> updateFileTable((FilesList) command.getData());
             case GET_TREE -> updateTreeView((DirectoryTree) command.getData());
             case FILE_TRANSFER -> writeFilePart((FilePart) command.getData());
+            case FILE_TRANSFER_RESULT -> {
+                iterator++;
+                if (iterator * FilePart.partSize >= fileSize) {
+                    progressBar.setProgress(0);
+                    tbFileButtons.setDisable(false);
+                    Connection.getInstance().getFilesList(currentFolder);
+                } else {
+                    float progress = ((float) (FilePart.partSize * iterator)) / fileSize;
+                    progressBar.setProgress(progress);
+                }
+            }
+            case REMOVE_FILE -> Connection.getInstance().getFilesList(currentFolder);
+
         }
 
     }
@@ -205,8 +225,13 @@ public class FileManagerController implements Initializable {
 
         if (data.isEnd()) {
             // это просто маркер что весь файл передан. включаем кнопку обратно
-            Platform.runLater(() -> tbFileButtons.setDisable(false));
+            Platform.runLater(() -> {
+                tbFileButtons.setDisable(false);
+                progressBar.setProgress(data.getProgress());
+                Connection.getInstance().getFilesList(currentFolder);
+            });
         } else {
+            Platform.runLater(() -> progressBar.setProgress(data.getProgress()));
             Path filePath = Context.current().getUserHome().resolve(currentFolder).resolve(data.getFileName());
             try {
                 Files.write(filePath, data.getData(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
@@ -226,7 +251,14 @@ public class FileManagerController implements Initializable {
     }
 
     public void upload() {
-
+        FileChooser chooser = new FileChooser();
+        File file = chooser.showOpenDialog(null);
+        if (file != null) {
+            tbFileButtons.setDisable(true);
+            iterator = 0;
+            fileSize = file.length();
+            Connection.getInstance().uploadFile(file.getAbsolutePath(), currentFolder);
+        }
     }
 
     public void download() throws IOException {
@@ -240,17 +272,24 @@ public class FileManagerController implements Initializable {
     }
 
     public void openFile() {
-        try {
-            Desktop.getDesktop().open(Paths.get(String.valueOf(Context.current().getUserHome()), currentFolder, currentFile).toFile());
-        } catch (IOException e) {
-            Alert alert = new Alert(Alert.AlertType.WARNING, "Не удалось открыть файл");
+        if (Files.exists(Paths.get(String.valueOf(Context.current().getUserHome()), currentFolder, currentFile))) {
+            try {
+                Desktop.getDesktop().open(Paths.get(String.valueOf(Context.current().getUserHome()), currentFolder, currentFile).toFile());
+            } catch (IOException e) {
+                Alert alert = new Alert(Alert.AlertType.WARNING, "Не удалось открыть файл");
+                alert.show();
+            }
+        } else {
+            Alert alert = new Alert(Alert.AlertType.WARNING, "Сперва надо файл скачать");
             alert.show();
         }
     }
 
     public void openFolder() {
         try {
-            Desktop.getDesktop().open(Paths.get(String.valueOf(Context.current().getUserHome()), currentFolder).toFile());
+            Desktop.getDesktop().open(Paths.get(
+                    String.valueOf(Context.current().getUserHome()),
+                    currentFolder).toFile());
         } catch (IOException e) {
             Alert alert = new Alert(Alert.AlertType.WARNING, "Не удалось открыть папку");
             alert.show();
@@ -258,11 +297,11 @@ public class FileManagerController implements Initializable {
 
     }
 
-    public void removeFile(ActionEvent actionEvent) {
+    public void removeFile() {
 
     }
 
-    public void renameFile(ActionEvent actionEvent) {
+    public void renameFile() {
 
     }
 }

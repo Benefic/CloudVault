@@ -15,7 +15,14 @@ import org.apache.logging.log4j.Logger;
 import ru.abenefic.cloudvault.client.support.Context;
 import ru.abenefic.cloudvault.common.Command;
 import ru.abenefic.cloudvault.common.auth.Authentication;
+import ru.abenefic.cloudvault.common.commands.FilePart;
 import ru.abenefic.cloudvault.common.commands.StringData;
+
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * Синглтон для всей работы с сетью
@@ -143,8 +150,35 @@ public class Connection {
         context.writeAndFlush(command);
     }
 
-    public void uploadFile(String path) {
+    public static void removeFile(String path) {
+
+    }
+
+    public void uploadFile(String path, String directory) {
         LOG.info("Uploading " + path);
+        Path filePath = Paths.get(path); // пас для чтения
+
+        String fileName = Paths.get(directory, filePath.getFileName().toString()).toString(); // путь для записи на сервере
+
+        if (Files.exists(filePath)) {
+            byte[] buffer = new byte[FilePart.partSize];
+
+            int read;
+
+            try (InputStream inputStream = new FileInputStream(filePath.toAbsolutePath().toString())) {
+                while ((read = inputStream.read(buffer)) != -1) {
+                    // на сервере прогресс не нужен, 0 заглушим
+                    Command response = Command.filePartTransferCommand(fileName, buffer, read, false, 0);
+                    response.setToken(Context.current().getToken());
+                    context.writeAndFlush(response);
+                }
+                Command response = Command.filePartTransferCommand(fileName, buffer, read, true, 0);
+                response.setToken(Context.current().getToken());
+                context.writeAndFlush(response);
+            } catch (Exception e) {
+                LOG.error("File upload", e);
+            }
+        }
     }
 
 
