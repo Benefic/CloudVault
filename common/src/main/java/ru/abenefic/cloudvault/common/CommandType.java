@@ -14,6 +14,7 @@ public enum CommandType {
     FILE_TRANSFER_RESULT,
     REMOVE_FILE,
     RENAME_FILE,
+    CREATE_FOLDER,
     EXIT,
     GET_FILE
 }

@@ -122,7 +122,7 @@ public class Connection {
         context.writeAndFlush(reg);
     }
 
-    public void getDirectoryTree() throws InterruptedException {
+    public void getDirectoryTree() {
         Command command = Command.getTreeCommand();
         writeToken(command);
         context.writeAndFlush(command);
@@ -197,4 +197,12 @@ public class Connection {
         writeToken(command);
         context.writeAndFlush(command);
     }
+
+    public void createFolder(String path) {
+        Command command = Command.createFolderCommand(path);
+        writeToken(command);
+        context.writeAndFlush(command);
+    }
+
+
 }

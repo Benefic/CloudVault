@@ -66,6 +66,12 @@ public class Command implements NetworkCommand {
         return command;
     }
 
+    public static Command createFolderCommand(String fileName) {
+        Command command = new Command();
+        command.type = CommandType.CREATE_FOLDER;
+        command.data = new StringData(fileName);
+        return command;
+    }
 
     public CommandType getType() {
         return type;

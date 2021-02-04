@@ -3,10 +3,10 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="600.0" prefWidth="800.0"
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="600.0" prefWidth="1200.0"
             xmlns="http://javafx.com/javafx/11.0.1"
             fx:controller="ru.abenefic.cloudvault.client.controller.FileManagerController">
-    <SplitPane dividerPositions="0.2" prefHeight="160.0" prefWidth="400.0" AnchorPane.bottomAnchor="0.0"
+    <SplitPane dividerPositions="0.2" prefHeight="160.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0"
                AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
             <TreeView fx:id="treeView" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0"
@@ -14,9 +14,11 @@
         </AnchorPane>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
             <ToolBar fx:id="tbFileButtons" layoutX="14.0" layoutY="14.0" prefHeight="40.0" prefWidth="200.0"
-                     AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="0.0">
                 <Button fx:id="btnUpload" focusTraversable="false" mnemonicParsing="false" onAction="#upload"
                         text="Загрузить"/>
+                <Button fx:id="btnNewFolder" focusTraversable="false" mnemonicParsing="false" onAction="#createFolder"
+                        text="Новая папка"/>
                 <Button fx:id="btnDownload" disable="true" focusTraversable="false" mnemonicParsing="false"
                         onAction="#download" text="Скачать"/>
                 <Button fx:id="btnOpenFile" focusTraversable="false" mnemonicParsing="false" onAction="#openFile"
@@ -28,8 +30,8 @@
                 <Button fx:id="btnRename" focusTraversable="false" mnemonicParsing="false" onAction="#renameFile"
                         text="Переименовать"/>
             </ToolBar>
-            <ToolBar nodeOrientation="RIGHT_TO_LEFT" prefHeight="40.0" prefWidth="150.0" AnchorPane.rightAnchor="0.0"
-                     AnchorPane.topAnchor="0.0">
+            <ToolBar maxWidth="-Infinity" minWidth="-Infinity" nodeOrientation="RIGHT_TO_LEFT" prefHeight="40.0"
+                     prefWidth="100.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                 <Button fx:id="btnExit" mnemonicParsing="false" onAction="#exit"/>
                 <Button fx:id="btnSettings" mnemonicParsing="false" onAction="#openSettings"/>
             </ToolBar>

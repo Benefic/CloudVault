@@ -100,7 +100,16 @@ public class CommandHandler extends SimpleChannelInboundHandler<Command> {
                     // возвращаем команду как сигнал завершения, пусть клиент по нему обновляет таблицу у себя
                     ctx.writeAndFlush(command);
                 }
-
+                case CREATE_FOLDER -> {
+                    String name = ((StringData) command.getData()).getData();
+                    Path filePath = StorageProvider.getFilePath(user, name);
+                    try {
+                        Files.createDirectories(filePath);
+                    } catch (IOException e) {
+                        LOG.error(e);
+                    }
+                    ctx.writeAndFlush(command);
+                }
                 default -> throw new IllegalStateException("Unexpected value: " + command.getType());
             }
         }

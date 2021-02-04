@@ -57,6 +57,7 @@ public class FileManagerController implements Initializable {
     public ProgressBar progressBar;
     public Button btnRemove;
     public Button btnRename;
+    public Button btnNewFolder;
 
     private String currentFolder = "./";
     private String currentFile;
@@ -129,15 +130,12 @@ public class FileManagerController implements Initializable {
     }
 
     private void updateTree() {
-        try {
-            Connection.getInstance().getDirectoryTree();
-        } catch (InterruptedException e) {
-            LOG.error("Get tree", e);
-        }
+        Connection.getInstance().getDirectoryTree();
     }
 
     private void updateTreeView(DirectoryTree directoryTree) {
         Platform.runLater(() -> {
+            rootNode.getChildren().clear();
             for (FileTreeItem fileTreeItem : directoryTree.getChildren()) {
                 String itemPath = fileTreeItem.getPath();
                 String[] pathParts = itemPath.split("\\\\");
@@ -164,7 +162,7 @@ public class FileManagerController implements Initializable {
             treeView.setRoot(rootNode);
             treeView.setShowRoot(true);
             treeView.setEditable(false);
-            // в корне могут быть не только папки, но и каталоги
+            // в корне могут быть не только папки, но и файлы
             Connection.getInstance().getFilesList(currentFolder);
         });
     }
@@ -225,6 +223,7 @@ public class FileManagerController implements Initializable {
                 }
             }
             case REMOVE_FILE, RENAME_FILE -> Connection.getInstance().getFilesList(currentFolder);
+            case CREATE_FOLDER -> Connection.getInstance().getDirectoryTree();
         }
 
     }
@@ -298,7 +297,7 @@ public class FileManagerController implements Initializable {
             Desktop.getDesktop().open(Paths.get(
                     String.valueOf(Context.current().getUserHome()),
                     currentFolder).toFile());
-        } catch (IOException e) {
+        } catch (Exception e) {
             Alert alert = new Alert(Alert.AlertType.WARNING, "Не удалось открыть папку");
             alert.show();
         }
@@ -341,5 +340,14 @@ public class FileManagerController implements Initializable {
                 Connection.getInstance().renameFile(Path.of(currentFolder, currentFile).toString(), newName);
             }
         });
+    }
+
+    public void createFolder() {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Новая папка");
+        dialog.setHeaderText("Введите имя новой папки");
+        dialog.setContentText("Имя папки:");
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(newName -> Connection.getInstance().createFolder(Path.of(currentFolder, newName).toString()));
     }
 }
