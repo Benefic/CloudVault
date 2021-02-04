@@ -150,10 +150,6 @@ public class Connection {
         context.writeAndFlush(command);
     }
 
-    public static void removeFile(String path) {
-
-    }
-
     public void uploadFile(String path, String directory) {
         LOG.info("Uploading " + path);
         Path filePath = Paths.get(path); // пас для чтения
@@ -162,17 +158,25 @@ public class Connection {
 
         if (Files.exists(filePath)) {
             byte[] buffer = new byte[FilePart.partSize];
+            Command response;
 
             int read;
 
             try (InputStream inputStream = new FileInputStream(filePath.toAbsolutePath().toString())) {
-                while ((read = inputStream.read(buffer)) != -1) {
+                int partNumber = 0;
+                read = inputStream.read(buffer);
+                while (read != -1) {
                     // на сервере прогресс не нужен, 0 заглушим
-                    Command response = Command.filePartTransferCommand(fileName, buffer, read, false, 0);
+                    response = Command.filePartTransferCommand(fileName, buffer, read, false, 0, partNumber);
                     response.setToken(Context.current().getToken());
                     context.writeAndFlush(response);
+                    partNumber++;
+                    // TODO если сделать так: while ( (read = inputStream.read(buffer)) != -1 )
+                    //  то во всех порциях окажется одинаковый массив байт... Не понимаю, на сервере работает
+                    buffer = new byte[FilePart.partSize];
+                    read = inputStream.read(buffer);
                 }
-                Command response = Command.filePartTransferCommand(fileName, buffer, read, true, 0);
+                response = Command.filePartTransferCommand(fileName, buffer, read, true, 0, partNumber);
                 response.setToken(Context.current().getToken());
                 context.writeAndFlush(response);
             } catch (Exception e) {
@@ -182,4 +186,15 @@ public class Connection {
     }
 
 
+    public void removeFile(String path) {
+        Command command = Command.fileRemoveCommand(path);
+        writeToken(command);
+        context.writeAndFlush(command);
+    }
+
+    public void renameFile(String path, String newName) {
+        Command command = Command.fileRenameCommand(path, newName);
+        writeToken(command);
+        context.writeAndFlush(command);
+    }
 }

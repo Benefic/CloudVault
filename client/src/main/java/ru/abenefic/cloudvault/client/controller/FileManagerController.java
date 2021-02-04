@@ -30,6 +30,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Date;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 
@@ -54,6 +55,8 @@ public class FileManagerController implements Initializable {
     public ToolBar tbFileButtons;
     public TableView<FileItem> tableView;
     public ProgressBar progressBar;
+    public Button btnRemove;
+    public Button btnRename;
 
     private String currentFolder = "./";
     private String currentFile;
@@ -101,9 +104,15 @@ public class FileManagerController implements Initializable {
                 if (newValue.isFolder()) {
                     currentFile = null;
                     btnDownload.setDisable(true);
+                    btnOpenFile.setDisable(true);
+                    btnRemove.setDisable(true);
+                    btnRename.setDisable(true);
                 } else {
                     currentFile = newValue.getName();
                     btnDownload.setDisable(false);
+                    btnOpenFile.setDisable(false);
+                    btnRemove.setDisable(false);
+                    btnRename.setDisable(false);
                 }
             }
         });
@@ -215,8 +224,7 @@ public class FileManagerController implements Initializable {
                     progressBar.setProgress(progress);
                 }
             }
-            case REMOVE_FILE -> Connection.getInstance().getFilesList(currentFolder);
-
+            case REMOVE_FILE, RENAME_FILE -> Connection.getInstance().getFilesList(currentFolder);
         }
 
     }
@@ -298,10 +306,40 @@ public class FileManagerController implements Initializable {
     }
 
     public void removeFile() {
-
+        Path path = Paths.get(String.valueOf(Context.current().getUserHome()), currentFolder, currentFile);
+        path.normalize();
+        if (Files.exists(path)) {
+            // удаляем сперва у себя, если есть
+            try {
+                Files.delete(path);
+            } catch (IOException e) {
+                LOG.error(e);
+            }
+        }
+        Connection.getInstance().removeFile(Path.of(currentFolder, currentFile).toString());
     }
 
     public void renameFile() {
-
+        TextInputDialog dialog = new TextInputDialog(currentFile);
+        dialog.setTitle("Введите имя");
+        dialog.setHeaderText("Переименовать файл?");
+        dialog.setContentText("Имя файла:");
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(newName -> {
+            if (!currentFile.equals(newName)) {
+                // действительно что-то поменяли
+                Path filePath = Paths.get(String.valueOf(Context.current().getUserHome()), currentFolder, currentFile);
+                filePath.normalize();
+                if (Files.exists(filePath)) {
+                    // меняем сперва у себя, если есть
+                    try {
+                        Files.move(filePath, filePath.getParent().resolve(newName));
+                    } catch (IOException e) {
+                        LOG.error(e);
+                    }
+                }
+                Connection.getInstance().renameFile(Path.of(currentFolder, currentFile).toString(), newName);
+            }
+        });
     }
 }

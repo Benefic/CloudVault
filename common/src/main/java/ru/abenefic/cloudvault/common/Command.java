@@ -38,10 +38,10 @@ public class Command implements NetworkCommand {
     }
 
 
-    public static Command filePartTransferCommand(String fileName, byte[] fileData, int dataLength, boolean isEnd, double progress) {
+    public static Command filePartTransferCommand(String fileName, byte[] fileData, int dataLength, boolean isEnd, double progress, int partNumber) {
         Command command = new Command();
         command.type = CommandType.FILE_TRANSFER;
-        command.data = new FilePart(fileName, fileData, dataLength, isEnd, progress);
+        command.data = new FilePart(fileName, fileData, dataLength, isEnd, progress, partNumber);
         return command;
     }
 

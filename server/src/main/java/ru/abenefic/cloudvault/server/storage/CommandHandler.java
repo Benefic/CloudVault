@@ -11,6 +11,7 @@ import ru.abenefic.cloudvault.common.commands.*;
 import ru.abenefic.cloudvault.server.model.User;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -61,17 +62,20 @@ public class CommandHandler extends SimpleChannelInboundHandler<Command> {
 
                         int read;
 
-                        InputStream inputStream = new FileInputStream(filePath.toAbsolutePath().toString());
-                        float size = inputStream.available();
-                        int iterator = 1;
-                        while ((read = inputStream.read(buffer)) != -1) {
-                            float progress = ((float) (buffer.length * iterator)) / size;
-                            response = Command.filePartTransferCommand(fileName, buffer, read, false, progress);
+                        try (InputStream inputStream = new FileInputStream(filePath.toAbsolutePath().toString())) {
+                            float size = inputStream.available();
+                            int iterator = 1;
+                            while ((read = inputStream.read(buffer)) != -1) {
+                                float progress = ((float) (buffer.length * iterator)) / size;
+                                response = Command.filePartTransferCommand(fileName, buffer, read, false, progress, iterator);
+                                ctx.writeAndFlush(response);
+                                iterator++;
+                            }
+                            response = Command.filePartTransferCommand(fileName, buffer, read, true, 0, iterator);
                             ctx.writeAndFlush(response);
-                            iterator++;
+                        } catch (IOException e) {
+                            LOG.error(e);
                         }
-                        response = Command.filePartTransferCommand(fileName, buffer, read, true, 0);
-                        ctx.writeAndFlush(response);
                     }
                 }
                 case FILE_TRANSFER -> {
@@ -93,6 +97,8 @@ public class CommandHandler extends SimpleChannelInboundHandler<Command> {
                     RenameData data = (RenameData) command.getData();
                     Path filePath = StorageProvider.getFilePath(user, data.getFilePath());
                     Files.move(filePath, filePath.getParent().resolve(data.getNewName()));
+                    // возвращаем команду как сигнал завершения, пусть клиент по нему обновляет таблицу у себя
+                    ctx.writeAndFlush(command);
                 }
 
                 default -> throw new IllegalStateException("Unexpected value: " + command.getType());

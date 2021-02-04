@@ -23,8 +23,10 @@
                         text="Открыть"/>
                 <Button fx:id="btnOpenFolder" focusTraversable="false" mnemonicParsing="false" onAction="#openFolder"
                         text="Открыть папку"/>
-                <Button focusTraversable="false" mnemonicParsing="false" onAction="#removeFile" text="Удалить"/>
-                <Button focusTraversable="false" mnemonicParsing="false" onAction="#renameFile" text="Переименовать"/>
+                <Button fx:id="btnRemove" focusTraversable="false" mnemonicParsing="false" onAction="#removeFile"
+                        text="Удалить"/>
+                <Button fx:id="btnRename" focusTraversable="false" mnemonicParsing="false" onAction="#renameFile"
+                        text="Переименовать"/>
             </ToolBar>
             <ToolBar nodeOrientation="RIGHT_TO_LEFT" prefHeight="40.0" prefWidth="150.0" AnchorPane.rightAnchor="0.0"
                      AnchorPane.topAnchor="0.0">

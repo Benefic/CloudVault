@@ -76,11 +76,14 @@ public class StorageProvider {
     }
 
     static boolean writeFilePart(User user, FilePart filePart) {
-
+        if (filePart.isEnd()) {
+            return true;
+        }
         try {
             Path filePath = getUserRoot(user).resolve(filePart.getFileName());
             Files.createDirectories(filePath.getParent()); // если такой папки ещё нет, чтобы ошибки не было
             Files.write(filePath, filePart.getData(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+            LOG.info("FIle part " + filePart.getPartNumber());
             return true;
         } catch (IOException e) {
             LOG.error(e);
