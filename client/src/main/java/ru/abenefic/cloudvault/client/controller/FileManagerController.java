@@ -4,8 +4,10 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
+import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
@@ -19,10 +21,12 @@ import ru.abenefic.cloudvault.common.Command;
 import ru.abenefic.cloudvault.common.NetworkCommand;
 import ru.abenefic.cloudvault.common.commands.*;
 
+import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Date;
 import java.util.ResourceBundle;
@@ -47,6 +51,7 @@ public class FileManagerController implements Initializable {
     public TreeView<FileTreeItem> treeView;
     public Button btnExit;
     public ToolBar tbFileButtons;
+    public TableView<FileItem> tableView;
 
     private String currentFolder = "./";
     private String currentFile;
@@ -67,6 +72,33 @@ public class FileManagerController implements Initializable {
             currentFile = null;
             btnDownload.setDisable(true);
             Connection.getInstance().getFilesList(currentFolder);
+        });
+        initTableView();
+    }
+
+    private void initTableView() {
+        TableColumn<FileItem, String> columnFileName = new TableColumn<>("Имя");
+        columnFileName.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+        TableColumn<FileItem, String> columnExtension = new TableColumn<>("Тип");
+        columnExtension.setCellValueFactory(new PropertyValueFactory<>("extension"));
+
+        TableColumn<FileItem, Date> columnDate = new TableColumn<>("Дата");
+        columnDate.setCellValueFactory(new PropertyValueFactory<>("date"));
+
+        TableColumn<FileItem, Boolean> columnExist = new TableColumn<>("Скачан");
+        columnExist.setCellValueFactory(new PropertyValueFactory<>("exist"));
+
+        tableView.getColumns().setAll(columnFileName, columnExtension, columnDate, columnExist);
+
+        tableView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
+            if (newValue.isFolder()) {
+                currentFile = null;
+                btnDownload.setDisable(true);
+            } else {
+                currentFile = newValue.getName();
+                btnDownload.setDisable(false);
+            }
         });
     }
 
@@ -146,44 +178,16 @@ public class FileManagerController implements Initializable {
     }
 
     private void updateTableView(FilesList filesList) {
-        tableBox.getChildren().clear();
 
-        TableView<FileItem> tableView = new TableView<>();
-
-        TableColumn<FileItem, String> columnFileName = new TableColumn<>("Имя");
-        columnFileName.setCellValueFactory(new PropertyValueFactory<>("name"));
-
-        TableColumn<FileItem, String> columnExtension = new TableColumn<>("Тип");
-        columnExtension.setCellValueFactory(new PropertyValueFactory<>("extension"));
-
-        TableColumn<FileItem, Date> columnDate = new TableColumn<>("Дата");
-        columnDate.setCellValueFactory(new PropertyValueFactory<>("date"));
-
-        TableColumn<FileItem, Boolean> columnExist = new TableColumn<>("Скачан");
-        columnExist.setCellValueFactory(new PropertyValueFactory<>("exist"));
-
-        tableView.getColumns().setAll(columnFileName, columnExtension, columnDate, columnExist);
+        tableView.getItems().clear();
 
         if (filesList != null) {
             SortedList<FileItem> sortedList = new SortedList<>(
                     FXCollections.observableArrayList(filesList.getList())
             );
             sortedList.comparatorProperty().bind(tableView.comparatorProperty());
-            tableView.setItems(sortedList);
+            tableView.getItems().addAll(sortedList);
         }
-
-        tableView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
-            if (newValue.isFolder()) {
-                currentFile = null;
-                btnDownload.setDisable(true);
-            } else {
-                currentFile = newValue.getName();
-                btnDownload.setDisable(false);
-            }
-        });
-
-        tableBox.getChildren().add(tableView);
-
     }
 
     // обрабатываем результаты запросов здесь
@@ -236,10 +240,29 @@ public class FileManagerController implements Initializable {
     }
 
     public void openFile() {
-
+        try {
+            Desktop.getDesktop().open(Paths.get(String.valueOf(Context.current().getUserHome()), currentFolder, currentFile).toFile());
+        } catch (IOException e) {
+            Alert alert = new Alert(Alert.AlertType.WARNING, "Не удалось открыть файл");
+            alert.show();
+        }
     }
 
     public void openFolder() {
+        try {
+            Desktop.getDesktop().open(Paths.get(String.valueOf(Context.current().getUserHome()), currentFolder).toFile());
+        } catch (IOException e) {
+            Alert alert = new Alert(Alert.AlertType.WARNING, "Не удалось открыть папку");
+            alert.show();
+        }
+
+    }
+
+    public void removeFile(ActionEvent actionEvent) {
+
+    }
+
+    public void renameFile(ActionEvent actionEvent) {
 
     }
 }

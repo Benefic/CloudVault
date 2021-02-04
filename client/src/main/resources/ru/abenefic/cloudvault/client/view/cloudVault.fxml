@@ -2,55 +2,34 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="600.0" prefWidth="800.0"
             xmlns="http://javafx.com/javafx/11.0.1"
             fx:controller="ru.abenefic.cloudvault.client.controller.FileManagerController">
-    <SplitPane dividerPositions="0.3" prefHeight="160.0" prefWidth="400.0" AnchorPane.bottomAnchor="0.0"
+    <SplitPane dividerPositions="0.2" prefHeight="160.0" prefWidth="400.0" AnchorPane.bottomAnchor="0.0"
                AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
             <TreeView fx:id="treeView" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0"
                       AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
         </AnchorPane>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-            <ToolBar fx:id="tbFileButtons" layoutX="14.0" layoutY="14.0" prefHeight="50.0" prefWidth="200.0"
+            <ToolBar fx:id="tbFileButtons" layoutX="14.0" layoutY="14.0" prefHeight="40.0" prefWidth="200.0"
                      AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                <Button fx:id="btnUpload" mnemonicParsing="false" onAction="#upload" text="Загрузить">
-                    <font>
-                        <Font size="14.0"/>
-                    </font>
-                </Button>
-                <Button fx:id="btnDownload" disable="true" mnemonicParsing="false" onAction="#download" text="Скачать">
-                    <font>
-                        <Font size="14.0"/>
-                    </font>
-                </Button>
-                <Button fx:id="btnOpenFile" mnemonicParsing="false" onAction="#openFile" text="Открыть">
-                    <font>
-                        <Font size="14.0"/>
-                    </font>
-                </Button>
-                <Button fx:id="btnOpenFolder" mnemonicParsing="false" onAction="#openFolder" text="Открыть папку">
-                    <font>
-                        <Font size="14.0"/>
-                    </font>
-                </Button>
+                <Button fx:id="btnUpload" mnemonicParsing="false" onAction="#upload" text="Загрузить"/>
+                <Button fx:id="btnDownload" disable="true" mnemonicParsing="false" onAction="#download" text="Скачать"/>
+                <Button fx:id="btnOpenFile" mnemonicParsing="false" onAction="#openFile" text="Открыть"/>
+                <Button fx:id="btnOpenFolder" mnemonicParsing="false" onAction="#openFolder" text="Открыть папку"/>
+                <Button mnemonicParsing="false" onAction="#removeFile" text="Удалить"/>
+                <Button mnemonicParsing="false" onAction="#renameFile" text="Переименовать"/>
             </ToolBar>
-            <ToolBar nodeOrientation="RIGHT_TO_LEFT" prefHeight="50.0" prefWidth="150.0" AnchorPane.rightAnchor="0.0"
+            <ToolBar nodeOrientation="RIGHT_TO_LEFT" prefHeight="40.0" prefWidth="150.0" AnchorPane.rightAnchor="0.0"
                      AnchorPane.topAnchor="0.0">
-                <Button fx:id="btnExit" mnemonicParsing="false" onAction="#exit">
-                    <font>
-                        <Font size="14.0"/>
-                    </font>
-                </Button>
-                <Button fx:id="btnSettings" mnemonicParsing="false" onAction="#openSettings">
-                    <font>
-                        <Font size="14.0"/>
-                    </font>
-                </Button>
+                <Button fx:id="btnExit" mnemonicParsing="false" onAction="#exit"/>
+                <Button fx:id="btnSettings" mnemonicParsing="false" onAction="#openSettings"/>
             </ToolBar>
             <VBox fx:id="tableBox" layoutY="40.0" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0"
-                  AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0"/>
+                  AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
+                <TableView fx:id="tableView" VBox.vgrow="ALWAYS"/>
+            </VBox>
         </AnchorPane>
     </SplitPane>
 </AnchorPane>
