@@ -66,7 +66,9 @@ public class StorageProvider {
                 new SimpleFileVisitor<>() {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                        list.add(FileItem.fromPath(file, attrs.creationTime()));
+                        if (!Files.isDirectory(file)) {
+                            list.add(FileItem.fromPath(file, attrs.creationTime()));
+                        }
                         return super.visitFile(file, attrs);
                     }
                 }

@@ -18,14 +18,14 @@ public class Database {
     private Database() {
     }
 
-    public static SessionFactory instance() throws Exception {
+    public static SessionFactory instance() {
         if (sessionFactory == null) {
             setUp();
         }
         return sessionFactory;
     }
 
-    protected static void setUp() throws Exception {
+    protected static void setUp() {
         // A SessionFactory is set up once for an application!
         final StandardServiceRegistry registry = new StandardServiceRegistryBuilder()
                 .configure() // configures settings from hibernate.cfg.xml

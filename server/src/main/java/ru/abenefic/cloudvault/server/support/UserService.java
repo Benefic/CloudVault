@@ -5,7 +5,14 @@ import ru.abenefic.cloudvault.common.auth.Authentication;
 import ru.abenefic.cloudvault.common.auth.AuthorisationException;
 import ru.abenefic.cloudvault.server.model.User;
 
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 public class UserService {
+
+    //++ заглушка для Code review
+    private static final ConcurrentLinkedQueue<User> users = new ConcurrentLinkedQueue<>();
+    private static final boolean useMock = true;
+    //--
 
     private static UserService instance;
 
@@ -21,6 +28,21 @@ public class UserService {
 
     public User register(Authentication auth) throws Exception {
         // check login busy
+
+        if (useMock) {
+            //++ заглушка для Code review
+            User mockUser;
+            for (User usr : users) {
+                if (usr.getLogin().equals(auth.getLogin())) {
+                    throw new AuthorisationException("Login is busy");
+                }
+            }
+            mockUser = new User(auth.getLogin(), auth.getPassword());
+            users.add(mockUser);
+            mockUser.setId(users.size());
+            return mockUser;
+            //--
+        }
         Session session = Database.instance().openSession();
         User user = session
                 .byNaturalId(User.class)
@@ -37,6 +59,22 @@ public class UserService {
     }
 
     public User authorize(Authentication auth) throws Exception {
+
+        if (useMock) {
+            //++ заглушка для Code review
+            User mockUser;
+            for (User usr : users) {
+                if (usr.getLogin().equals(auth.getLogin())) {
+                    return usr;
+                }
+            }
+            mockUser = new User(auth.getLogin(), auth.getPassword());
+            users.add(mockUser);
+            mockUser.setId(users.size());
+            return mockUser;
+            //--
+        }
+
         Session session = Database.instance().openSession();
         User user = session
                 .byNaturalId(User.class)
