@@ -5,12 +5,13 @@
 package ru.abenefic.cloudvault.common;
 
 
-import ru.abenefic.cloudvault.common.commands.CommandData;
-import ru.abenefic.cloudvault.common.commands.FilePart;
+import ru.abenefic.cloudvault.common.commands.*;
 
-import java.io.Serializable;
-
-public class Command implements Serializable {
+/**
+ * Основной класс транспорта - он передаётся и ловится Хэндлерами на обеих сторонах
+ * По совместительству "фабрика" команд
+ */
+public class Command implements NetworkCommand {
 
     private CommandType type;
     private CommandData data;
@@ -29,16 +30,46 @@ public class Command implements Serializable {
         return command;
     }
 
-    public static Command filePartTransferCommand(String fileName, byte[] fileData, boolean isEnd) {
+    public static Command getFileCommand(CommandData commandData) {
         Command command = new Command();
-        command.type = CommandType.FILE_TRANSFER;
-        command.data = new FilePart(fileName, fileData, isEnd);
+        command.type = CommandType.GET_FILE;
+        command.data = commandData;
         return command;
     }
 
-    public static Command exitCommand() {
+
+    public static Command filePartTransferCommand(String fileName, byte[] fileData, int dataLength, boolean isEnd, double progress, int partNumber) {
         Command command = new Command();
-        command.type = CommandType.EXIT;
+        command.type = CommandType.FILE_TRANSFER;
+        command.data = new FilePart(fileName, fileData, dataLength, isEnd, progress, partNumber);
+        return command;
+    }
+
+    public static Command fileTransferResult(boolean result) {
+        Command command = new Command();
+        command.type = CommandType.FILE_TRANSFER_RESULT;
+        command.data = new FileTransferResult(result);
+        return command;
+    }
+
+    public static Command fileRemoveCommand(String fileName) {
+        Command command = new Command();
+        command.type = CommandType.REMOVE_FILE;
+        command.data = new StringData(fileName);
+        return command;
+    }
+
+    public static Command fileRenameCommand(String fileName, String newName) {
+        Command command = new Command();
+        command.type = CommandType.RENAME_FILE;
+        command.data = new RenameData(fileName, newName);
+        return command;
+    }
+
+    public static Command createFolderCommand(String fileName) {
+        Command command = new Command();
+        command.type = CommandType.CREATE_FOLDER;
+        command.data = new StringData(fileName);
         return command;
     }
 

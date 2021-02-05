@@ -9,6 +9,10 @@ import ru.abenefic.cloudvault.client.support.Context;
 import ru.abenefic.cloudvault.common.auth.Authentication;
 import ru.abenefic.cloudvault.common.auth.AuthorisationException;
 
+/**
+ * Класс для передачи и обраьботки авторизации.
+ * Сообщает о результатах подписанному объекту AuthDialogController handler
+ */
 public class AuthHandler extends ChannelInboundHandlerAdapter {
 
     private static final Logger LOG = LogManager.getLogger(AuthHandler.class);
@@ -18,7 +22,7 @@ public class AuthHandler extends ChannelInboundHandlerAdapter {
     public AuthHandler(AuthDialogController handler, boolean registration) {
         super();
         this.handler = handler;
-        this.registration = registration;
+        this.registration = registration; // регистрация или авторизация
     }
 
     @Override

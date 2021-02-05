@@ -4,13 +4,18 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import ru.abenefic.cloudvault.common.NetworkCommand;
 
-import java.io.Serializable;
+/**
+ * Этот класс отвечает как за авторизацию, так и за регистрацию
+ * переключатель режима - флаг registration
+ */
+
 
 @Data
 @NoArgsConstructor
 @RequiredArgsConstructor
-public class Authentication implements Serializable {
+public class Authentication implements NetworkCommand {
     @NonNull
     private String login;
     @NonNull

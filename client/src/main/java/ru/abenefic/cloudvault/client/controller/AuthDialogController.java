@@ -1,21 +1,18 @@
 package ru.abenefic.cloudvault.client.controller;
 
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.abenefic.cloudvault.client.Launcher;
 import ru.abenefic.cloudvault.client.network.Connection;
 import ru.abenefic.cloudvault.client.support.Context;
+import ru.abenefic.cloudvault.common.NetworkCommand;
+import ru.abenefic.cloudvault.common.auth.Authentication;
+import ru.abenefic.cloudvault.common.auth.AuthorisationException;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
@@ -23,13 +20,16 @@ import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+/**
+ * Экран входа
+ */
 public class AuthDialogController {
 
     private static final Logger LOG = LogManager.getLogger(AuthDialogController.class);
 
-    private Stage settingsDialogStage;
     private Launcher launcher;
 
+    public CheckBox cbSavePassword;
     public ImageView imageView;
     public Pane container;
     public Button btnLogin;
@@ -37,6 +37,7 @@ public class AuthDialogController {
     public TextField fldLogin;
     public PasswordField fldPassword;
     public Hyperlink hlRegister;
+
 
     public void prepare(Launcher launcher) {
         this.launcher = launcher;
@@ -47,62 +48,79 @@ public class AuthDialogController {
             LOG.error("Image load error:", e);
         }
 
-        //TODO remove
-//        fldLogin.setText("user1");
-//        fldPassword.setText("112358");
-//        try {
-//            login(null);
-//        } catch (NoSuchAlgorithmException e) {
-//            e.printStackTrace();
-//        }
+        Context context = Context.current();
+        fldLogin.setText(context.getLogin());
+        cbSavePassword.setSelected(context.isSavePassword());
+
+        // создаём подключение - слушаем команды здесь для регистрации и авторизации
+        Thread connection = new Thread(this::connect);
+        connection.setDaemon(true);
+        connection.start();
 
     }
 
-    public void openSettings(ActionEvent event) {
+    private void connect() {
+        Connection.getInstance()
+                .onCommand(this::onCommand)
+                .onConnected(this::onConnected)
+                .connect();
+    }
 
-        try {
-
-            FXMLLoader settingsLoader = new FXMLLoader();
-
-            settingsLoader.setLocation(Launcher.class.getResource("view/settingsDialog.fxml"));
-            Parent settingsDialogPanel = settingsLoader.load();
-            settingsDialogStage = new Stage();
-
-            settingsDialogStage.setTitle("Cloud Vault");
-            settingsDialogStage.initModality(Modality.WINDOW_MODAL);
-            settingsDialogStage.setResizable(false);
-            Scene scene = new Scene(settingsDialogPanel);
-            settingsDialogStage.setScene(scene);
-            settingsDialogStage.show();
-
-            SettingsController settingsController = settingsLoader.getController();
-            settingsController.prepare(this);
-
-        } catch (IOException e) {
-            e.printStackTrace();
+    private void onConnected() {
+        Context context = Context.current();
+        if (context.isSavePassword() && !context.getPassword().isBlank() && !context.getLogin().isBlank()) {
+            // если пользователь сохранил параметры входа - пробуем войти и открыть хранилище
+            try {
+                loginOnServer();
+            } catch (Exception e) {
+                LOG.error("Login failed", e);
+            }
         }
     }
 
-    public void login(ActionEvent event) throws NoSuchAlgorithmException {
+    public void openSettings() {
+        SettingsController.openSettings();
+    }
+
+    public void login() throws NoSuchAlgorithmException {
         prepareContext();
         try {
-            new Connection().login(this);
+            loginOnServer();
         } catch (InterruptedException e) {
-            LOG.error("register", e);
+            LOG.error(e);
+            fireError("Connection error!");
         }
     }
 
-    public void register(ActionEvent event) throws NoSuchAlgorithmException {
-        prepareContext();
-        try {
-            new Connection().register(this);
-        } catch (InterruptedException e) {
-            LOG.error("register", e);
+    private void loginOnServer() throws InterruptedException {
+        Connection.getInstance().login();
+    }
+
+
+    private void onCommand(NetworkCommand command) {
+        if (command instanceof Authentication) {
+            Authentication auth = (Authentication) command;
+            if (!auth.getToken().isBlank()) {
+                // нет токена - нет входа.
+                Context.current().setToken(auth.getToken());
+                loginSuccess();
+            }
+        } else if (command instanceof AuthorisationException) {
+            // что-то пошло не так, сообщаем пользователю
+            AuthorisationException auth = (AuthorisationException) command;
+            fireError(auth.getMessage());
         }
+    }
+
+    public void register() throws NoSuchAlgorithmException {
+        prepareContext();
+        Connection.getInstance().register();
     }
 
     private void prepareContext() throws NoSuchAlgorithmException {
-        Context.current().setLogin(fldLogin.getText());
+        // сохраняем значения полей в служебном объекте-синглтоне контекста
+        Context context = Context.current();
+        context.setLogin(fldLogin.getText());
         String password = fldPassword.getText();
         MessageDigest md = MessageDigest.getInstance("MD5");
         md.update(password.getBytes());
@@ -110,11 +128,9 @@ public class AuthDialogController {
         String passwordHash = DatatypeConverter
                 .printHexBinary(digest).toUpperCase();
 
-        Context.current().setPassword(passwordHash);
-    }
-
-    public void closeSettings() {
-        settingsDialogStage.close();
+        context.setPassword(passwordHash);
+        context.setSavePassword(cbSavePassword.isSelected());
+        context.saveSettings();
     }
 
     public void fireError(String error) {
@@ -129,6 +145,8 @@ public class AuthDialogController {
 
     public void loginSuccess() {
         Platform.runLater(() -> {
+            // перед открытием очищаем поле пароля, чтобы при выходе требовать его для повторного входа
+            fldPassword.setText("");
             launcher.openVault();
         });
     }
