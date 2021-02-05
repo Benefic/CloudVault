@@ -141,7 +141,7 @@ public class FileManagerController implements Initializable {
             rootNode.getChildren().clear();
             for (FileTreeItem fileTreeItem : directoryTree.getChildren()) {
                 String itemPath = fileTreeItem.getPath();
-                String[] pathParts = itemPath.replaceAll("\\\\","/").split("/");
+                String[] pathParts = itemPath.replaceAll("\\\\", "/").split("/");
                 if (pathParts.length == 1) {
                     rootNode.getChildren().add(new TreeItem<>(fileTreeItem, new ImageView(folderIcon)));
                 } else {
@@ -154,6 +154,7 @@ public class FileManagerController implements Initializable {
                     parentName = sb.toString();
                     TreeItem<FileTreeItem> parent = findItemByPath(rootNode, parentName);
                     ObservableList<TreeItem<FileTreeItem>> children;
+                    LOG.info("Path: " + itemPath + "; parent: " + parentName + " (" + parent + ")");
                     if (parent != null) {
                         children = parent.getChildren();
                         if (children != null) {

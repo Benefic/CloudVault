@@ -1,6 +1,5 @@
 package ru.abenefic.cloudvault.common.commands;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
 
@@ -11,7 +10,6 @@ import java.io.Serializable;
  */
 
 @Data
-@AllArgsConstructor
 public class FileTreeItem implements Serializable {
     @NonNull
     private String name;
@@ -21,5 +19,10 @@ public class FileTreeItem implements Serializable {
     @Override
     public String toString() {
         return name;
+    }
+
+    public FileTreeItem(@NonNull String name, @NonNull String path) {
+        this.name = name;
+        this.path = path.replaceAll("\\\\", "/");
     }
 }
