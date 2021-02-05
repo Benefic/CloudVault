@@ -59,9 +59,10 @@ public class StorageProvider {
         Path directory = Path.of(
                 Configuration.getInstance().getSrvRootDirectory(),
                 String.valueOf(user.getId()),
-                "\\",
+                "/",
                 parentPath);
 
+        directory.normalize();
         Files.walkFileTree(directory, Set.of(), 1,
                 new SimpleFileVisitor<>() {
                     @Override

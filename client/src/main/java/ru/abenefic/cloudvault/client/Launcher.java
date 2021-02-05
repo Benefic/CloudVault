@@ -45,15 +45,6 @@ public class Launcher extends Application {
         authController.prepare(this);
     }
 
-    private void connect() {
-        Connection.getInstance()
-                .onConnected(() -> {
-                })
-                .onCommand(command -> {
-                })
-                .connect();
-    }
-
     public void openVault() {
         try {
 

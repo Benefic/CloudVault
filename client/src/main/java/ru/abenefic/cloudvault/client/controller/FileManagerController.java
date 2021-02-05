@@ -92,13 +92,16 @@ public class FileManagerController implements Initializable {
         TableColumn<FileItem, String> columnExtension = new TableColumn<>("Тип");
         columnExtension.setCellValueFactory(new PropertyValueFactory<>("extension"));
 
+        TableColumn<FileItem, Long> columnSize = new TableColumn<>("Размер");
+        columnSize.setCellValueFactory(new PropertyValueFactory<>("size"));
+
         TableColumn<FileItem, Date> columnDate = new TableColumn<>("Дата");
         columnDate.setCellValueFactory(new PropertyValueFactory<>("date"));
 
         TableColumn<FileItem, Boolean> columnExist = new TableColumn<>("Скачан");
         columnExist.setCellValueFactory(new PropertyValueFactory<>("exist"));
 
-        tableView.getColumns().setAll(columnFileName, columnExtension, columnDate, columnExist);
+        tableView.getColumns().setAll(columnFileName, columnExtension, columnSize, columnDate, columnExist);
 
         tableView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
             if (newValue != null) {
@@ -138,16 +141,16 @@ public class FileManagerController implements Initializable {
             rootNode.getChildren().clear();
             for (FileTreeItem fileTreeItem : directoryTree.getChildren()) {
                 String itemPath = fileTreeItem.getPath();
-                String[] pathParts = itemPath.split("\\\\");
+                String[] pathParts = itemPath.replaceAll("\\\\","/").split("/");
                 if (pathParts.length == 1) {
                     rootNode.getChildren().add(new TreeItem<>(fileTreeItem, new ImageView(folderIcon)));
                 } else {
                     String parentName;
                     StringBuilder sb = new StringBuilder();
                     for (int i = 0; i < pathParts.length - 1; i++) {
-                        sb.append(pathParts[i]).append("\\");
+                        sb.append(pathParts[i]).append("/");
                     }
-                    sb.deleteCharAt(sb.lastIndexOf("\\"));
+                    sb.deleteCharAt(sb.lastIndexOf("/"));
                     parentName = sb.toString();
                     TreeItem<FileTreeItem> parent = findItemByPath(rootNode, parentName);
                     ObservableList<TreeItem<FileTreeItem>> children;

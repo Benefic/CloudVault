@@ -19,6 +19,7 @@ public class FileItem implements Serializable, Comparable<FileItem> {
     private long createAt;
     private String extension;
     private Date date;
+    private long size;
     // этот параметр говорит, есть ли такой файл на клиентской стороне. Для отображения в таблице
     private boolean exist;
 
@@ -32,6 +33,7 @@ public class FileItem implements Serializable, Comparable<FileItem> {
             fileItem.extension = fileItem.isFolder ? "" : pathname.substring(pathname.lastIndexOf(".") + 1);
             fileItem.createAt = createAt.toMillis();
             fileItem.date = new Date(fileItem.createAt);
+            fileItem.size = file.length();
         }
         return fileItem;
     }
